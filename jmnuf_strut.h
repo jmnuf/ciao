@@ -20,6 +20,25 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
+ *
+ * @file jmnuf_strut.h
+ * @brief A string builder for strings with presence.
+ *
+ * @par Usage Example:
+ * @code
+ * #define ST_REALLOC realloc
+ * #define ST_FREE free
+ * #define JMNUF_STRUT_IMPLEMENTATION
+ * #include "jmnuf_strut.h"
+ *
+ * Strut str = {0};
+ * st_push_fmt(&str, "Hello, %s!", "world");
+ * st_push_zstr(&str, " Welcome.");
+ * st_push_null(&str);
+ * printf("%s\n", str.items);  // "Hello, world! Welcome."
+ * char *result = st_detach(&str);
+ * free(result);
+ * @endcode
  */
 
 #ifndef __JMNUF_STRUT_H
@@ -34,6 +53,14 @@
 #  define ST_INIT_CAP (256)
 #endif// ST_INIT_CAP
 
+/**
+ * Dynamic string builder struct.
+ *
+ * - items: Buffer containing the string data.
+ * - len: Current string length.
+ * - cap: Total buffer capacity.
+ * - oom: Out-of-memory sticky error flag.
+ */
 typedef struct Strut {
   char *items;
   size_t len;
@@ -42,40 +69,180 @@ typedef struct Strut {
   bool oom; // Out of Memory sticky error
 } Strut;
 
+/** Empty/zero-initialized Strut constant. */
 #define ST_EMPTY ((Strut){ .items = NULL, .len = 0, .cap = 0, .oom = false })
 
+/**
+ * Ensures minimum capacity, growing exponentially.
+ * @param st String builder pointer.
+ * @param min_cap Minimum capacity to ensure.
+ * @return true on success, false on allocation failure.
+ */
 bool st_reserve(Strut *st, size_t min_cap);
+
+/**
+ * Resizes to exact capacity.
+ * @param st String builder pointer.
+ * @param new_cap Exact capacity to set.
+ * @return true on success, false on allocation failure.
+ */
 bool st_reserve_exact(Strut *st, size_t new_cap);
+
+/**
+ * Ensures space for N additional characters.
+ * @param st String builder pointer.
+ * @param additional_count Number of extra characters to accommodate.
+ * @return true on success, false on allocation failure.
+ */
 bool st_ensure(Strut *st, size_t additional_count);
+
+/**
+ * Frees memory and zeros the struct.
+ * @param st String builder pointer.
+ */
 void st_free(Strut *st);
 
+/**
+ * Appends a single character.
+ * @param st String builder pointer.
+ * @param c Character to append.
+ * @return true on success, false if oom or allocation fails.
+ */
 bool st_push(Strut *st, char c);
+
+/**
+ * Appends a null-terminated string.
+ * @param st String builder pointer.
+ * @param zstr Null-terminated string to append (can be NULL).
+ * @return true on success, false if oom or allocation fails.
+ */
 bool st_push_zstr(Strut *st, const char *zstr);
+
+/**
+ * Appends a buffer of given size.
+ * @param st String builder pointer.
+ * @param buffer Buffer to append.
+ * @param buf_size Number of bytes to append.
+ * @return true on success, false if allocation fails.
+ */
 bool st_push_buf(Strut *st, const char *buffer, size_t buf_size);
+
+/**
+ * Appends a printf-style formatted string.
+ * @param st String builder pointer.
+ * @param fmt Format string.
+ * @param ... Format arguments.
+ * @return true on success, false if oom or allocation fails.
+ *
+ * Supported specifiers: %d, %u, %x, %X, %p, %c, %s, %.*s
+ * @note %V (String_View) only works if jmnuf_vista.h is included first.
+ */
 bool st_push_fmt(Strut *st, const char *fmt, ...);
+
+/**
+ * Appends an unsigned 64-bit integer.
+ * @param st String builder pointer.
+ * @param value Integer to append.
+ * @return true on success, false if oom or allocation fails.
+ */
 bool st_push_ui64(Strut *st, uint64_t value);
+
+/**
+ * Appends a signed 64-bit integer.
+ * @param st String builder pointer.
+ * @param value Integer to append.
+ * @return true on success, false if oom or allocation fails.
+ */
 bool st_push_si64(Strut *st, int64_t value);
+
+/**
+ * Appends a hex string representation.
+ * @param st String builder pointer.
+ * @param value Integer to append.
+ * @param uppercase Use uppercase hex letters (A-F) if true.
+ * @return true on success, false if oom or allocation fails.
+ */
 bool st_push_hex(Strut *st, uint64_t value, bool uppercase);
+
+/**
+ * Appends "true" or "false".
+ * @param st String builder pointer.
+ * @param value Boolean value.
+ * @return true on success, false if oom or allocation fails.
+ */
 bool st_push_bool(Strut *st, bool value);
 
+/**
+ * Returns true if length is 0.
+ * @param st String builder pointer.
+ * @return true if len is 0, false otherwise.
+ */
 bool st_is_empty(Strut *st);
+
+/**
+ * Returns true if at capacity.
+ * @param st String builder pointer.
+ * @return true if len equals cap, false otherwise.
+ */
 bool st_is_full(Strut *st);
+
+/**
+ * Removes last N characters.
+ * @param st String builder pointer.
+ * @param n Number of characters to remove.
+ */
 void st_pop_n(Strut *st, size_t n);
+
+/** Removes the last character. */
 #define st_pop(st) st_pop_n((st), 1)
 
+/**
+ * Returns pointer to character at index, or NULL if out of bounds.
+ * @param st String builder pointer.
+ * @param index Character index.
+ * @return Pointer to character, or NULL if out of bounds.
+ */
 char *st_at(Strut *st, size_t index);
+
+/**
+ * Returns the buffer and resets the struct.
+ * @param st String builder pointer.
+ * @return The buffer (caller owns the memory).
+ */
 char *st_detach(Strut *st);
 
+/** Appends a null character. */
 #define st_push_null(st) st_push((st), '\0')
+/** Shrinks capacity to fit current length. */
 #define st_shrink(st) st_reserve_exact((st), (st)->len)
+/** Sets length to 0 without freeing memory. */
 #define st_clear(st) do { (st)->len = 0; } while (0)
+/** Gets character at index. */
 #define st_get(st, index) ((st)->items[(index)])
+/** Gets pointer to last character, or NULL if empty. */
 #define st_last(st) ((st)->len == 0 ? NULL : &(st)->items[(st)->len-1])
 
 #ifdef __JMNUF_STRING_VISTA_H
+/** Appends a String_View. */
 #define st_push_sv(st, sv) st_push_buf((st), (sv).data, (sv).len)
+/** Creates a String_View from the current contents. */
 #define st_to_sv(st) sv_from_parts((st)->items, (st)->len)
+
+/**
+ * Returns a String_View of the last N characters.
+ * @param st String builder pointer.
+ * @param n Number of characters from the end.
+ * @return String_View of the last N characters.
+ */
 String_View st_peek_sv(Strut *st, size_t n);
+
+/**
+ * Returns a String_View of a range.
+ * @param st String builder pointer.
+ * @param start Starting index.
+ * @param count Number of characters.
+ * @return String_View of the range.
+ */
 String_View st_view_range(Strut *st, size_t start, size_t count);
 #endif // __JMNUF_STRING_VISTA_H
 
