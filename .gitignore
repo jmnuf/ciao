@@ -1,0 +1,8 @@
+build/
+
+nob
+*.old
+
+*.o
+*.obj
+*.exe

@@ -246,6 +246,11 @@ String_View st_peek_sv(Strut *st, size_t n);
 String_View st_view_range(Strut *st, size_t start, size_t count);
 #endif // __JMNUF_STRING_VISTA_H
 
+#ifdef __DYNAMIC_ARRAY_CA_H
+Strut st_from_void_da(void **items, size_t *len, size_t *cap, size_t item_size);
+#define st_from_da(da) st_from_void_da((void**)&(da)->items, &(da)->len, &(da)->cap, DA_ITEM_SIZE(da))
+#endif// __DYNAMIC_ARRAY_CA_H
+
 #endif // __JMNUF_STRUT_H
 
 #ifdef JMNUF_STRUT_IMPLEMENTATION
@@ -514,5 +519,20 @@ String_View st_view_range(Strut *st, size_t start, size_t count) {
   return sv_from_parts(sv->items + start, count);
 }
 #endif // __JMNUF_STRING_VISTA_H
+
+#ifdef __DYNAMIC_ARRAY_CA_H
+
+Strut st_from_void_da(void **items, size_t *len, size_t *cap, size_t item_size) {
+  Strut st = {
+    .items = (char*)*items,
+    .len   = (*len) * item_size,
+    .cap   = (*cap) * item_size,
+  };
+  *items = NULL;
+  *len = *cap = 0;
+  return st;
+}
+
+#endif// __DYNAMIC_ARRAY_CA_H
 
 #endif // JMNUF_STRUT_IMPLEMENTATION

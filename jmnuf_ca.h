@@ -112,6 +112,9 @@
  * @return Pointer to the last element, or NULL if len is 0.
  */
 #define da_last(da) ((da)->len == 0 ? NULL : &(da)->items[(da)->len-1])
+#define da_lasti(da) ((da)->len <= 1 ? 0 : (da)->len-1)
+
+#define da_first(da) ((da)->len == 0 ? NULL : &(da)->items[0])
 
 /**
  * Ensures the array has capacity for at least the specified number of items.
@@ -321,7 +324,7 @@ bool da_void_find(const void *items, size_t len, size_t item_size, bool (*predic
  * @param value The value to append.
  * @return true on success, false on allocation failure.
  */
-#define da_push_typed(T, da, value) da_void_push((void**)&(da)->items, &(da)->len, &(da)->cap, &(T){(value)}, DA_ITEM_SIZE(da))
+#define da_push_typed(T, da, value) da_void_push((void**)&(da)->items, &(da)->len, &(da)->cap, (T[]){(value)}, DA_ITEM_SIZE(da))
 
 /**
  * Inserts a value of an explicitly specified type at a given index.
@@ -332,7 +335,7 @@ bool da_void_find(const void *items, size_t len, size_t item_size, bool (*predic
  * @param index Position to insert at.
  * @return true on success, false if index is out of range or allocation fails.
  */
-#define da_insert_typed(T, da, value, index) da_void_insert((void**)&(da)->items, &(da)->len, &(da)->cap, &(T){(value)}, DA_ITEM_SIZE(da), (index))
+#define da_insert_typed(T, da, value, index) da_void_insert((void**)&(da)->items, &(da)->len, &(da)->cap, (T[]){(value)}, DA_ITEM_SIZE(da), (index))
 
 /**
  * Swaps two elements in the array by index.
