@@ -422,7 +422,7 @@ const char *sv_end(String_View sv) {
 
 
 String_View sv_slice(String_View sv, size_t start, size_t end) {
-  if (sv->data == NULL) return SV_NULL;
+  if (sv.data == NULL) return SV_NULL;
   if (start >= sv.len) return sv_from_parts(sv.data + sv.len, 0);
   if (end < start) return sv_from_parts(sv.data + start, 0);
   if (end > sv.len) end = sv.len;
@@ -471,7 +471,7 @@ String_View sv_chop_by_sv(String_View *sv, String_View delim) {
 String_View sv_trim_left(String_View sv) {
   if (sv.data == NULL) return SV_NULL;
   String_View result = sv;
-  while (result.len && string_view__is_space(*result.data)) {
+  while (result.len && string_view__is_whitespace(*result.data)) {
     result.data++;
     result.len--;
   }
@@ -481,7 +481,7 @@ String_View sv_trim_left(String_View sv) {
 String_View sv_trim_right(String_View sv) {
   if (sv.data == NULL) return SV_NULL;
   String_View result = sv;
-  while (result.len && string_view__is_space(result.data[result.len - 1])) {
+  while (result.len && string_view__is_whitespace(result.data[result.len - 1])) {
     result.len--;
   }
   return result;
@@ -558,7 +558,7 @@ bool sv_has_sv_prefix(String_View sv, String_View prefix) {
 bool sv_has_sv_suffix(String_View sv, String_View suffix) {
   if (sv.data == NULL || suffix.data == NULL) return false;
   if (sv.len < suffix.len) return false;
-  char *d = sv.data + (sv.len - suffix.len);
+  const char *d = sv.data + (sv.len - suffix.len);
   for (size_t i = 0; i < suffix.len; ++i) {
     if (d[i] != suffix.data[i]) return false;
   }

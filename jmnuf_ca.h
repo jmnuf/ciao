@@ -272,10 +272,11 @@ bool da_void_find(const void *items, size_t len, size_t item_size, bool (*predic
  *
  * @param da Pointer to the dynamic array.
  * @param predicate Function that returns true if item matches.
+ * @param[out] index Pointer to store the found index (can be NULL).
  * @param ctx User context passed to predicate.
  * @return true if a match was found, false otherwise.
  */
-#define da_find(da, predicate, ctx) da_void_find((da)->items, (da)->len, DA_ITEM_SIZE(da), (predicate), (ctx))
+#define da_find(da, predicate, index, ctx) da_void_find((da)->items, (da)->len, DA_ITEM_SIZE(da), (predicate), (index), (ctx))
 
 /**
  * Ensures the array has capacity for at least the specified number of items.
@@ -430,7 +431,7 @@ bool da_void_find(const void *items, size_t len, size_t item_size, bool (*predic
  *
  * @param da Pointer to the dynamic array.
  */
-#define da_free(da) da_void_free(&(da)->items, &(da)->len, &(da)->cap)
+#define da_free(da) da_void_free((void**)&(da)->items, &(da)->len, &(da)->cap)
 
 /**
  * Sets the length to zero, effectively clearing all elements without freeing memory.
@@ -445,7 +446,7 @@ bool da_void_find(const void *items, size_t len, size_t item_size, bool (*predic
  * @param dest_da Destination dynamic array (cleared first).
  * @param src_da Source dynamic array.
  */
-#define da_copy(dest_da, src_da) (da_clear(dest_da), da_push_da((dest_da), (src_da)))
+#define da_copy(dest_da, src_da) ((dest_da)->len = 0, da_push_da((dest_da), (src_da)))
 
 /**
  * Iterates over all elements in the array with a typed pointer.
@@ -499,7 +500,7 @@ static_assert(false, "DA_REALLOC macro requires to be specified");
 static_assert(false, "DA_FREE macro requires to be specified");
 #endif //  DA_FREE
 
-static inline void *da__memcpy(void restrict *dest, void restrict *src, size_t n) {
+static inline void *da__memcpy(void *restrict dest, void *restrict src, size_t n) {
   char *dest_buf = (char*)dest;
   char *src_buf  = (char*)src;
   for (size_t i = 0; i < n; ++i) {
@@ -553,7 +554,7 @@ bool da_void_push(void **items_ref, size_t *len, size_t *cap, const void *item, 
   size_t new_len = (*len) + 1;
   if (!da_void_reserve(items_ref, cap, item_size, new_len)) return false;
   char *items = (char*)*items_ref;
-  da__memcpy(items + item_size * (*len), item, item_size);
+  da__memcpy(items + item_size * (*len), (void*)item, item_size);
   *len = new_len;
   return true;
 }
@@ -567,7 +568,7 @@ bool da_void_insert(void **items_ref, size_t *len, size_t *cap, const void *item
     size_t move_count = (*len - index) * item_size;
     da__memmove(items + (index + 1) * item_size, items + index * item_size, move_count);
   }
-  da__memcpy(items + index * item_size, item_ref, item_size);
+  da__memcpy(items + index * item_size, (void*)item_ref, item_size);
   *len = new_len;
   return true;
 }
@@ -578,7 +579,7 @@ bool da_void_push_many(void **items_ref, size_t *len, size_t *cap, const void *i
   if (!da_void_reserve(items_ref, cap, item_size, new_len)) return false;
   char *da_items = (char*)*items_ref;
   da_items += (*len) * item_size;
-  da__memcpy(da_items, items_arr, items_count * item_size);
+  da__memcpy(da_items, (void*)items_arr, items_count * item_size);
   *len = new_len;
   return true;
 }
