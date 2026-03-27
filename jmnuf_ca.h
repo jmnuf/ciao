@@ -1,10 +1,32 @@
 /**
+ * MIT License
+ *
+ * Copyright (c) 2026 Jose Marco Nufio
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ *
  * @file jmnuf_ca.h
- * @brief Type-safe generic dynamic array library for C.
+ * @brief Generic dynamic arrays using macros for ease of use.
  *
  * This library provides a macro-based approach to creating and managing
  * dynamic arrays of any type. Define an array using DynamicArray(T) where
- * T is your element type, then use the provided macros for type-safe operations.
+ * T is your element type, then use the provided macros for operations.
  *
  * @note Requires DA_REALLOC and DA_FREE macros to be defined before including
  *       the implementation section.
@@ -28,35 +50,12 @@
 
 #ifndef __DYNAMIC_ARRAY_CA_H
 #define __DYNAMIC_ARRAY_CA_H
-/*
- * MIT License
- * 
- * Copyright (c) 2026 Jose Marco Nufio
- * 
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- * 
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
 
 #include <stddef.h>
 #include <stdbool.h>
 
 /**
- * @brief Default initial capacity for newly allocated arrays.
+ * Default initial capacity for newly allocated arrays.
  *
  * Can be overridden before including the header.
  */
@@ -65,7 +64,7 @@
 #endif // DA_INIT_CAP
 
 /**
- * @brief Defines a dynamic array structure for a given type.
+ * Defines a dynamic array structure for a given type.
  *
  * @param T The element type for the array.
  *
@@ -85,14 +84,14 @@
 #define DynamicArray(T) struct { T *items; size_t len; size_t cap; }
 
 /**
- * @brief Returns the size of elements in a dynamic array.
+ * Returns the size of elements in a dynamic array.
  * @param da Pointer to the dynamic array.
  * @return Size in bytes of a single element.
  */
 #define DA_ITEM_SIZE(da) sizeof(*(da)->items)
 
 /**
- * @brief Returns a pointer to the element at the given index.
+ * Returns a pointer to the element at the given index.
  * @param da Pointer to the dynamic array.
  * @param i Zero-based index of the element.
  * @return Pointer to the element at index i.
@@ -100,7 +99,7 @@
 #define da_at(da, i) (&(da)->items[(i)])
 
 /**
- * @brief Gets the element at the given index by value.
+ * Gets the element at the given index by value.
  * @param da Pointer to the dynamic array.
  * @param i Zero-based index of the element.
  * @return The element value at index i.
@@ -108,14 +107,14 @@
 #define da_get(da, i) ((da)->items[(i)])
 
 /**
- * @brief Returns a pointer to the last element, or NULL if empty.
+ * Returns a pointer to the last element, or NULL if empty.
  * @param da Pointer to the dynamic array.
  * @return Pointer to the last element, or NULL if len is 0.
  */
 #define da_last(da) ((da)->len == 0 ? NULL : &(da)->items[(da)->len-1])
 
 /**
- * @brief Ensures the array has capacity for at least the specified number of items.
+ * Ensures the array has capacity for at least the specified number of items.
  *
  * Capacity grows exponentially (doubles) until it meets or exceeds the requested amount.
  *
@@ -128,7 +127,7 @@
 bool da_void_reserve(void **items_ref, size_t *cap, size_t item_size, size_t amount);
 
 /**
- * @brief Frees the array memory and resets length and capacity.
+ * Frees the array memory and resets length and capacity.
  *
  * @param[in,out] items_ref Pointer to the items pointer (set to NULL on free).
  * @param[in,out] len Pointer to the length variable (set to 0).
@@ -137,7 +136,7 @@ bool da_void_reserve(void **items_ref, size_t *cap, size_t item_size, size_t amo
 void da_void_free(void **items_ref, size_t *len, size_t *cap);
 
 /**
- * @brief Reallocates to exactly fit the current length (no extra capacity).
+ * Reallocates to exactly fit the current length (no extra capacity).
  *
  * @param[in,out] items_ref Pointer to the items pointer.
  * @param[in,out] cap Pointer to the capacity variable.
@@ -147,7 +146,7 @@ void da_void_free(void **items_ref, size_t *len, size_t *cap);
 bool da_void_reserve_exact(void **items_ref, size_t *cap, size_t len);
 
 /**
- * @brief Appends a single item to the end of the array.
+ * Appends a single item to the end of the array.
  *
  * @param[in,out] items_ref Pointer to the items pointer.
  * @param[in,out] len Pointer to the length variable.
@@ -159,7 +158,7 @@ bool da_void_reserve_exact(void **items_ref, size_t *cap, size_t len);
 bool da_void_push(void **items_ref, size_t *len, size_t *cap, const void *item, size_t item_size);
 
 /**
- * @brief Inserts a single item at the specified index, shifting elements right.
+ * Inserts a single item at the specified index, shifting elements right.
  *
  * @param[in,out] items_ref Pointer to the items pointer.
  * @param[in,out] len Pointer to the length variable.
@@ -172,7 +171,7 @@ bool da_void_push(void **items_ref, size_t *len, size_t *cap, const void *item, 
 bool da_void_insert(void **items_ref, size_t *len, size_t *cap, const void *item_ref, size_t item_size, size_t index);
 
 /**
- * @brief Appends multiple items from an array to the dynamic array.
+ * Appends multiple items from an array to the dynamic array.
  *
  * @param[in,out] items_ref Pointer to the items pointer.
  * @param[in,out] len Pointer to the length variable.
@@ -185,7 +184,7 @@ bool da_void_insert(void **items_ref, size_t *len, size_t *cap, const void *item
 bool da_void_push_many(void **items_ref, size_t *len, size_t *cap, const void *items_arr, size_t item_size, size_t items_count);
 
 /**
- * @brief Removes and optionally returns the last element.
+ * Removes and optionally returns the last element.
  *
  * @param items Pointer to the items array.
  * @param[in,out] len Pointer to the length variable.
@@ -196,7 +195,7 @@ bool da_void_push_many(void **items_ref, size_t *len, size_t *cap, const void *i
 bool da_void_pop(void *items, size_t *len, void *item_out_ref, size_t item_size);
 
 /**
- * @brief Removes and optionally returns the element at index using swap-remove.
+ * Removes and optionally returns the element at index using swap-remove.
  *
  * Swaps the element with the last element, then removes it. O(1) but does not preserve order.
  *
@@ -210,7 +209,7 @@ bool da_void_pop(void *items, size_t *len, void *item_out_ref, size_t item_size)
 bool da_void_pop_at_unordered(void *items, size_t *len, void *item_out_ref, size_t item_size, size_t index);
 
 /**
- * @brief Removes and optionally returns the element at index, preserving order.
+ * Removes and optionally returns the element at index, preserving order.
  *
  * Shifts all subsequent elements left. O(n).
  *
@@ -224,7 +223,7 @@ bool da_void_pop_at_unordered(void *items, size_t *len, void *item_out_ref, size
 bool da_void_pop_at_ordered(void *items, size_t *len, void *item_out_ref, size_t item_size, size_t index);
 
 /**
- * @brief Swaps two elements in the array by index.
+ * Swaps two elements in the array by index.
  *
  * @param items Pointer to the items array.
  * @param len Current length of the array.
@@ -236,7 +235,7 @@ bool da_void_pop_at_ordered(void *items, size_t *len, void *item_out_ref, size_t
 bool da_void_swap(void *items, size_t len, size_t item_size, size_t i, size_t j);
 
 /**
- * @brief Removes the element at index, preserving order by shifting elements left.
+ * Removes the element at index, preserving order by shifting elements left.
  *
  * @param items Pointer to the items array.
  * @param[in,out] len Pointer to the length variable.
@@ -246,7 +245,7 @@ bool da_void_swap(void *items, size_t len, size_t item_size, size_t i, size_t j)
 void da_void_remove_ordered(void *items, size_t *len, size_t item_size, size_t index);
 
 /**
- * @brief Removes the element at index using swap-remove (order not preserved).
+ * Removes the element at index using swap-remove (order not preserved).
  *
  * @param items Pointer to the items array.
  * @param[in,out] len Pointer to the length variable.
@@ -256,7 +255,7 @@ void da_void_remove_ordered(void *items, size_t *len, size_t item_size, size_t i
 void da_void_remove_unordered(void *items, size_t *len, size_t item_size, size_t index);
 
 /**
- * @brief Finds the first element matching a predicate.
+ * Finds the first element matching a predicate.
  *
  * @param items Pointer to the items array.
  * @param len Number of elements to search.
@@ -269,7 +268,7 @@ void da_void_remove_unordered(void *items, size_t *len, size_t item_size, size_t
 bool da_void_find(const void *items, size_t len, size_t item_size, bool (*predicate)(const void *item, const void *user_context), size_t *index, const void *user_context);
 
 /**
- * @brief Finds the first element matching a predicate in a typed dynamic array.
+ * Finds the first element matching a predicate in a typed dynamic array.
  *
  * @param da Pointer to the dynamic array.
  * @param predicate Function that returns true if item matches.
@@ -279,7 +278,7 @@ bool da_void_find(const void *items, size_t len, size_t item_size, bool (*predic
 #define da_find(da, predicate, ctx) da_void_find((da)->items, (da)->len, DA_ITEM_SIZE(da), (predicate), (ctx))
 
 /**
- * @brief Ensures the array has capacity for at least the specified number of items.
+ * Ensures the array has capacity for at least the specified number of items.
  *
  * @param da Pointer to the dynamic array.
  * @param count Minimum total capacity to ensure.
@@ -288,7 +287,7 @@ bool da_void_find(const void *items, size_t len, size_t item_size, bool (*predic
 #define da_reserve(da, count) da_void_reserve((void**)&(da)->items, &(da)->cap, DA_ITEM_SIZE(da), (count))
 
 /**
- * @brief Reallocates to exactly fit the current length (no extra capacity).
+ * Reallocates to exactly fit the current length (no extra capacity).
  *
  * @param da Pointer to the dynamic array.
  * @param count Expected final length (typically (da)->len).
@@ -297,7 +296,7 @@ bool da_void_find(const void *items, size_t len, size_t item_size, bool (*predic
 #define da_reserve_exact(da, count) da_void_reserve_exact((void**)&(da)->items, &(da)->cap, (count))
 
 /**
- * @brief Shrinks capacity to match current length, freeing excess memory.
+ * Shrinks capacity to match current length, freeing excess memory.
  *
  * @param da Pointer to the dynamic array.
  * @return true on success, false on allocation failure.
@@ -305,7 +304,7 @@ bool da_void_find(const void *items, size_t len, size_t item_size, bool (*predic
 #define da_shrink(da) da_reserve_exact((da), ((da)->len))
 
 /**
- * @brief Ensures space for additional elements beyond current length.
+ * Ensures space for additional elements beyond current length.
  *
  * @param da Pointer to the dynamic array.
  * @param additional_count Number of extra elements to accommodate.
@@ -314,7 +313,7 @@ bool da_void_find(const void *items, size_t len, size_t item_size, bool (*predic
 #define da_ensure(da, additional_count) da_reserve((da), ((da)->len + (additional_count)))
 
 /**
- * @brief Pushes a value of an explicitly specified type onto the array.
+ * Pushes a value of an explicitly specified type onto the array.
  *
  * @param T The element type.
  * @param da Pointer to the dynamic array.
@@ -324,7 +323,7 @@ bool da_void_find(const void *items, size_t len, size_t item_size, bool (*predic
 #define da_push_typed(T, da, value) da_void_push((void**)&(da)->items, &(da)->len, &(da)->cap, &(T){(value)}, DA_ITEM_SIZE(da))
 
 /**
- * @brief Inserts a value of an explicitly specified type at a given index.
+ * Inserts a value of an explicitly specified type at a given index.
  *
  * @param T The element type.
  * @param da Pointer to the dynamic array.
@@ -335,7 +334,7 @@ bool da_void_find(const void *items, size_t len, size_t item_size, bool (*predic
 #define da_insert_typed(T, da, value, index) da_void_insert((void**)&(da)->items, &(da)->len, &(da)->cap, &(T){(value)}, DA_ITEM_SIZE(da), (index))
 
 /**
- * @brief Swaps two elements in the array by index.
+ * Swaps two elements in the array by index.
  *
  * @param da Pointer to the dynamic array.
  * @param i First index.
@@ -354,7 +353,7 @@ bool da_void_find(const void *items, size_t len, size_t item_size, bool (*predic
 
 #ifdef DA_TYPEOF
 /**
- * @brief Pushes a value onto the array, inferring type from the array.
+ * Pushes a value onto the array, inferring type from the array.
  *
  * Requires compiler support for typeof (GCC, Clang, or MSVC 2022+).
  *
@@ -364,7 +363,7 @@ bool da_void_find(const void *items, size_t len, size_t item_size, bool (*predic
  */
 #  define da_push(da, value) da_push_typed(DA_TYPEOF(*(da)->items), (da), (value))
 /**
- * @brief Inserts a value at a given index, inferring type from the array.
+ * Inserts a value at a given index, inferring type from the array.
  *
  * Requires compiler support for typeof (GCC, Clang, or MSVC 2022+).
  *
@@ -379,7 +378,7 @@ bool da_void_find(const void *items, size_t len, size_t item_size, bool (*predic
 #endif // DA_TYPEOF
 
 /**
- * @brief Pushes elements from a C array onto the dynamic array.
+ * Pushes elements from a C array onto the dynamic array.
  *
  * @param da Pointer to the dynamic array.
  * @param array Source C array.
@@ -389,7 +388,7 @@ bool da_void_find(const void *items, size_t len, size_t item_size, bool (*predic
 #define da_push_arr(da, array, arr_len) da_void_push_many((void**)&(da)->items, &(da)->len, &(da)->cap, (array), DA_ITEM_SIZE(da), arr_len)
 
 /**
- * @brief Pushes all elements from one dynamic array onto another.
+ * Pushes all elements from one dynamic array onto another.
  *
  * @param da_a Destination dynamic array.
  * @param da_b Source dynamic array.
@@ -398,7 +397,7 @@ bool da_void_find(const void *items, size_t len, size_t item_size, bool (*predic
 #define da_push_da(da_a, da_b) da_push_arr((da_a), ((da_b)->items), ((da_b)->len))
 
 /**
- * @brief Pops the last element from the array.
+ * Pops the last element from the array.
  *
  * @param da Pointer to the dynamic array.
  * @param item_out Variable to store the popped element.
@@ -407,7 +406,7 @@ bool da_void_find(const void *items, size_t len, size_t item_size, bool (*predic
 #define da_pop(da, item_out) da_void_pop((da)->items, &(da)->len, (item_out), DA_ITEM_SIZE(da))
 
 /**
- * @brief Pops the element at a specific index, preserving order.
+ * Pops the element at a specific index, preserving order.
  *
  * @param da Pointer to the dynamic array.
  * @param index Position to pop at.
@@ -417,7 +416,7 @@ bool da_void_find(const void *items, size_t len, size_t item_size, bool (*predic
 #define da_pop_at_ordered(da, index, item_out) da_void_pop_at_ordered((da)->items, &(da)->len, (item_out), DA_ITEM_SIZE(da), (index))
 
 /**
- * @brief Pops the element at a specific index using swap-remove.
+ * Pops the element at a specific index using swap-remove.
  *
  * @param da Pointer to the dynamic array.
  * @param index Position to pop at.
@@ -427,21 +426,21 @@ bool da_void_find(const void *items, size_t len, size_t item_size, bool (*predic
 #define da_pop_at_unordered(da, index, item_out) da_void_pop_at_unordered((da)->items, &(da)->len, (item_out), DA_ITEM_SIZE(da), (index))
 
 /**
- * @brief Frees all memory associated with the array.
+ * Frees all memory associated with the array.
  *
  * @param da Pointer to the dynamic array.
  */
 #define da_free(da) da_void_free(&(da)->items, &(da)->len, &(da)->cap)
 
 /**
- * @brief Sets the length to zero, effectively clearing all elements without freeing memory.
+ * Sets the length to zero, effectively clearing all elements without freeing memory.
  *
  * @param da Pointer to the dynamic array.
  */
 #define da_clear(da) do { (da)->len = 0; } while (0)
 
 /**
- * @brief Clears the destination array and copies all elements from the source.
+ * Clears the destination array and copies all elements from the source.
  *
  * @param dest_da Destination dynamic array (cleared first).
  * @param src_da Source dynamic array.
@@ -449,7 +448,7 @@ bool da_void_find(const void *items, size_t len, size_t item_size, bool (*predic
 #define da_copy(dest_da, src_da) (da_clear(dest_da), da_push_da((dest_da), (src_da)))
 
 /**
- * @brief Iterates over all elements in the array with a typed pointer.
+ * Iterates over all elements in the array with a typed pointer.
  *
  * @param T Element type.
  * @param it Iterator variable name.
@@ -465,7 +464,7 @@ bool da_void_find(const void *items, size_t len, size_t item_size, bool (*predic
 #define da_foreach(T, it, da) for (T *it = (da)->items; it < (da)->items + (da)->len; ++it)
 
 /**
- * @brief Iterates over all elements in the array with a const typed pointer.
+ * Iterates over all elements in the array with a const typed pointer.
  *
  * @param T Element type (const).
  * @param it Iterator variable name.
@@ -474,7 +473,7 @@ bool da_void_find(const void *items, size_t len, size_t item_size, bool (*predic
 #define da_foreach_const(T, it, da) for (const T *it = (da)->items; it < (da)->items + (da)->len; ++it)
 
 /**
- * @brief Iterates over array indices.
+ * Iterates over array indices.
  *
  * @param it Index variable name (size_t).
  * @param da Pointer to the dynamic array.

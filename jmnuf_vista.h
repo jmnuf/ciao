@@ -1,6 +1,28 @@
 /**
+ * MIT License
+ *
+ * Copyright (c) 2026 Jose Marco Nufio
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ *
  * @file jmnuf_vista.h
- * @brief Lightweight string view library for C.
+ * @brief Views into string data - no ownership, no allocation.
  *
  * This library provides a String_View type for efficiently representing
  * string slices without memory allocation. Views reference existing string
@@ -22,36 +44,13 @@
 
 #ifndef __STRING_VIEW_VISTA_H
 #define __STRING_VIEW_VISTA_H
-/*
- * MIT License
- * 
- * Copyright (c) 2026 Jose Marco Nufio
- * 
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- * 
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
 
 
 #include <stddef.h>
 #include <stdbool.h>
 
 /**
- * @brief A non-owning view into a string.
+ * A non-owning view into a string.
  *
  * Contains a pointer to string data and its length. Does not own memory.
  */
@@ -61,7 +60,7 @@ typedef struct String_View {
 } String_View;
 
 /**
- * @brief Constructs a String_View from a pointer and length.
+ * Constructs a String_View from a pointer and length.
  *
  * @param ptr Pointer to the string data.
  * @param length Number of bytes.
@@ -70,7 +69,7 @@ typedef struct String_View {
 #define sv_from_parts(ptr, length) ((String_View) { .data = (ptr), .len = (length) })
 
 /**
- * @brief Printf format specifier for String_View.
+ * Printf format specifier for String_View.
  *
  * Use with SV_Arg to print a String_View.
  *
@@ -82,7 +81,7 @@ typedef struct String_View {
 #define SV_Fmt "%.*s"
 
 /**
- * @brief Arguments for printf-style formatting of String_View.
+ * Arguments for printf-style formatting of String_View.
  *
  * @param sv A String_View variable.
  * @return Arguments suitable for SV_Fmt.
@@ -90,14 +89,14 @@ typedef struct String_View {
 #define SV_Arg(sv) (int)(sv).len, (sv).data
 
 /**
- * @brief A null/empty String_View constant.
+ * A null/empty String_View constant.
  *
  * Equivalent to sv_from_parts(NULL, 0).
  */
 #define SV_NULL ((String_View) {0, 0})
 
 /**
- * @brief Creates a String_View from a null-terminated string.
+ * Creates a String_View from a null-terminated string.
  *
  * @param zstr Pointer to a null-terminated string (can be NULL).
  * @return A String_View covering the entire string.
@@ -105,7 +104,7 @@ typedef struct String_View {
 String_View sv_from_zstr(const char *zstr);
 
 /**
- * @brief Compares two String_Views lexicographically.
+ * Compares two String_Views lexicographically.
  *
  * @param a First string view.
  * @param b Second string view.
@@ -114,7 +113,7 @@ String_View sv_from_zstr(const char *zstr);
 int sv_compare(String_View a, String_View b);
 
 /**
- * @brief Checks if a String_View has zero length.
+ * Checks if a String_View has zero length.
  *
  * @param sv The string view to check.
  * @return true if len is 0, false otherwise.
@@ -122,7 +121,7 @@ int sv_compare(String_View a, String_View b);
 bool is_sv_empty(String_View sv);
 
 /**
- * @brief Checks if a String_View has a NULL data pointer.
+ * Checks if a String_View has a NULL data pointer.
  *
  * @param sv The string view to check.
  * @return true if data is NULL, false otherwise.
@@ -130,7 +129,7 @@ bool is_sv_empty(String_View sv);
 bool is_sv_null(String_View sv);
 
 /**
- * @brief Returns a pointer to one past the last character.
+ * Returns a pointer to one past the last character.
  *
  * @param sv The string view.
  * @return Pointer to the end of the string, or NULL if data is NULL.
@@ -138,7 +137,7 @@ bool is_sv_null(String_View sv);
 const char *sv_end(String_View sv);
 
 /**
- * @brief Returns a slice of the string view.
+ * Returns a slice of the string view.
  *
  * @param sv The source string view.
  * @param start Starting index (inclusive).
@@ -148,7 +147,7 @@ const char *sv_end(String_View sv);
 String_View sv_slice(String_View sv, size_t start, size_t end);
 
 /**
- * @brief Removes n bytes from the left, returning the removed portion.
+ * Removes n bytes from the left, returning the removed portion.
  *
  * Modifies sv to start after the removed portion.
  *
@@ -159,7 +158,7 @@ String_View sv_slice(String_View sv, size_t start, size_t end);
 String_View sv_chop_left(String_View *sv, size_t n);
 
 /**
- * @brief Removes n bytes from the right, returning the removed portion.
+ * Removes n bytes from the right, returning the removed portion.
  *
  * @param[in,out] sv String view to chop from.
  * @param n Number of bytes to remove from right.
@@ -168,7 +167,7 @@ String_View sv_chop_left(String_View *sv, size_t n);
 String_View sv_chop_right(String_View *sv, size_t n);
 
 /**
- * @brief Removes and returns the portion before the first delimiter character.
+ * Removes and returns the portion before the first delimiter character.
  *
  * @param[in,out] sv String view to chop from.
  * @param delim Delimiter character to search for.
@@ -177,7 +176,7 @@ String_View sv_chop_right(String_View *sv, size_t n);
 String_View sv_chop_by_char(String_View *sv, char delim);
 
 /**
- * @brief Removes and returns the portion before the first delimiter string.
+ * Removes and returns the portion before the first delimiter string.
  *
  * @param[in,out] sv String view to chop from.
  * @param delim Delimiter string to search for.
@@ -195,7 +194,7 @@ String_View sv_chop_by_sv(String_View *sv, String_View delim);
 #define sv_chop_by_zstr(sv, zstr) sv_chop_by_sv((sv), sv_from_zstr((zstr)))
 
 /**
- * @brief Removes whitespace from the left side.
+ * Removes whitespace from the left side.
  *
  * @param sv The string view to trim.
  * @return A new String_View with leading whitespace removed.
@@ -203,7 +202,7 @@ String_View sv_chop_by_sv(String_View *sv, String_View delim);
 String_View sv_trim_left(String_View sv);
 
 /**
- * @brief Removes whitespace from the right side.
+ * Removes whitespace from the right side.
  *
  * @param sv The string view to trim.
  * @return A new String_View with trailing whitespace removed.
@@ -211,7 +210,7 @@ String_View sv_trim_left(String_View sv);
 String_View sv_trim_right(String_View sv);
 
 /**
- * @brief Removes whitespace from both sides.
+ * Removes whitespace from both sides.
  *
  * @param sv The string view to trim.
  * @return A new String_View with leading and trailing whitespace removed.
@@ -219,7 +218,7 @@ String_View sv_trim_right(String_View sv);
 String_View sv_trim(String_View sv);
 
 /**
- * @brief Finds the first occurrence of a character.
+ * Finds the first occurrence of a character.
  *
  * @param haystack The string view to search.
  * @param needle The character to find.
@@ -229,7 +228,7 @@ String_View sv_trim(String_View sv);
 bool sv_find_char(String_View haystack, char needle, size_t *index);
 
 /**
- * @brief Finds the first occurrence of a substring.
+ * Finds the first occurrence of a substring.
  *
  * @param haystack The string view to search.
  * @param needle The substring to find.
@@ -239,7 +238,7 @@ bool sv_find_char(String_View haystack, char needle, size_t *index);
 bool sv_find_sv(String_View haystack, String_View needle, size_t *index);
 
 /**
- * @brief Splits a string view at the first delimiter character.
+ * Splits a string view at the first delimiter character.
  *
  * @param haystack The string view to split.
  * @param delim Delimiter character.
@@ -249,7 +248,7 @@ bool sv_find_sv(String_View haystack, String_View needle, size_t *index);
 void sv_split_by_char(String_View haystack, char delim, String_View *left, String_View *right);
 
 /**
- * @brief Splits a string view at the first delimiter string.
+ * Splits a string view at the first delimiter string.
  *
  * @param haystack The string view to split.
  * @param delim Delimiter string.
@@ -259,7 +258,7 @@ void sv_split_by_char(String_View haystack, char delim, String_View *left, Strin
 void sv_split_by_sv(String_View haystack, String_View delim, String_View *left, String_View *right);
 
 /**
- * @brief Checks if sv starts with the given prefix.
+ * Checks if sv starts with the given prefix.
  *
  * @param sv The string view to check.
  * @param prefix The prefix to look for.
@@ -268,7 +267,7 @@ void sv_split_by_sv(String_View haystack, String_View delim, String_View *left, 
 bool sv_has_sv_prefix(String_View sv, String_View prefix);
 
 /**
- * @brief Checks if sv ends with the given suffix.
+ * Checks if sv ends with the given suffix.
  *
  * @param sv The string view to check.
  * @param suffix The suffix to look for.
@@ -277,7 +276,7 @@ bool sv_has_sv_prefix(String_View sv, String_View prefix);
 bool sv_has_sv_suffix(String_View sv, String_View suffix);
 
 /**
- * @brief Checks if sv starts with a null-terminated prefix.
+ * Checks if sv starts with a null-terminated prefix.
  *
  * @param sv The string view to check.
  * @param prefix Null-terminated prefix string.
@@ -286,7 +285,7 @@ bool sv_has_sv_suffix(String_View sv, String_View suffix);
 bool sv_has_zstr_prefix(String_View sv, const char *prefix);
 
 /**
- * @brief Checks if sv ends with a null-terminated suffix.
+ * Checks if sv ends with a null-terminated suffix.
  *
  * @param sv The string view to check.
  * @param suffix Null-terminated suffix string.
@@ -295,7 +294,7 @@ bool sv_has_zstr_prefix(String_View sv, const char *prefix);
 bool sv_has_zstr_suffix(String_View sv, const char *suffix);
 
 /**
- * @brief Checks if sv starts with the given character.
+ * Checks if sv starts with the given character.
  *
  * @param sv The string view to check.
  * @param prefix The character to look for.
@@ -304,7 +303,7 @@ bool sv_has_zstr_suffix(String_View sv, const char *suffix);
 bool sv_has_char_prefix(String_View sv, char prefix);
 
 /**
- * @brief Checks if sv ends with the given character.
+ * Checks if sv ends with the given character.
  *
  * @param sv The string view to check.
  * @param suffix The character to look for.
@@ -313,7 +312,7 @@ bool sv_has_char_prefix(String_View sv, char prefix);
 bool sv_has_char_suffix(String_View sv, char suffix);
 
 /**
- * @brief Checks if two String_Views are equal.
+ * Checks if two String_Views are equal.
  *
  * @param a First string view.
  * @param b Second string view.
@@ -322,7 +321,7 @@ bool sv_has_char_suffix(String_View sv, char suffix);
 bool sv_eq_sv(String_View a, String_View b);
 
 /**
- * @brief Checks if two String_Views are equal, ignoring ASCII case.
+ * Checks if two String_Views are equal, ignoring ASCII case.
  *
  * @param a First string view.
  * @param b Second string view.
@@ -331,7 +330,7 @@ bool sv_eq_sv(String_View a, String_View b);
 bool sv_eq_sv_ascii_ignore_case(String_View a, String_View b);
 
 /**
- * @brief Checks if a String_View equals a null-terminated string.
+ * Checks if a String_View equals a null-terminated string.
  *
  * @param a String view to compare.
  * @param b Null-terminated string.
@@ -340,7 +339,7 @@ bool sv_eq_sv_ascii_ignore_case(String_View a, String_View b);
 bool sv_eq_zstr(String_View a, const char *b);
 
 /**
- * @brief Checks if two null-terminated strings are equal.
+ * Checks if two null-terminated strings are equal.
  *
  * @param a First null-terminated string.
  * @param b Second null-terminated string.
@@ -349,7 +348,7 @@ bool sv_eq_zstr(String_View a, const char *b);
 bool zstr_eq(const char *a, const char *b);
 
 /**
- * @brief Checks if a null-terminated string ends with a suffix.
+ * Checks if a null-terminated string ends with a suffix.
  *
  * @param zstr The null-terminated string to check.
  * @param suffix The suffix to look for.
@@ -358,7 +357,7 @@ bool zstr_eq(const char *a, const char *b);
 bool zstr_has_suffix(const char *zstr, const char *suffix);
 
 /**
- * @brief Checks if a null-terminated string starts with a prefix.
+ * Checks if a null-terminated string starts with a prefix.
  *
  * @param zstr The null-terminated string to check.
  * @param prefix The prefix to look for.
@@ -367,7 +366,7 @@ bool zstr_has_suffix(const char *zstr, const char *suffix);
 bool zstr_has_prefix(const char *zstr, const char *prefix);
 
 /**
- * @brief Returns the length of a null-terminated string.
+ * Returns the length of a null-terminated string.
  *
  * @param zstr The null-terminated string (can be NULL).
  * @return The length in bytes, or 0 if NULL.
