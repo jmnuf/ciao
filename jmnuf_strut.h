@@ -72,12 +72,12 @@ char *st_detach(Strut *st);
 #define st_get(st, index) ((st)->items[(index)])
 #define st_last(st) ((st)->len == 0 ? NULL : &(st)->items[(st)->len-1])
 
-#ifdef __STRING_VIEW_VISTA_H
+#ifdef __JMNUF_STRING_VISTA_H
 #define st_push_sv(st, sv) st_push_buf((st), (sv).data, (sv).len)
 #define st_to_sv(st) sv_from_parts((st)->items, (st)->len)
 String_View st_peek_sv(Strut *st, size_t n);
 String_View st_view_range(Strut *st, size_t start, size_t count);
-#endif // __STRING_VIEW_VISTA_H
+#endif // __JMNUF_STRING_VISTA_H
 
 #endif // __JMNUF_STRUT_H
 
@@ -229,7 +229,7 @@ bool st_push_fmt(Strut *st, const char *fmt, ...) {
           const char *s = va_arg(ap, const char *);
           if (!st_push_zstr(st, s)) { result = false; goto defer; }
         } break;
-        #ifdef __STRING_VIEW_VISTA_H
+        #ifdef __JMNUF_STRING_VISTA_H
         case 'V': {
           String_View sv = va_arg(ap, String_View);
           if (!st_push_sv(st, sv)) { result = false; goto defer; }
@@ -333,7 +333,7 @@ char *st_detach(Strut *st) {
   return buf;
 }
 
-#ifdef __STRING_VIEW_VISTA_H
+#ifdef __JMNUF_STRING_VISTA_H
 String_View st_peek_sv(Strut *st, size_t n) {
   if (n >= st->len) return st_to_sv(st);
   return sv_from_parts(st->data[(st->len - n)], n);
@@ -344,6 +344,6 @@ String_View st_view_range(Strut *st, size_t start, size_t count) {
   if (start + count > st->len) return sv_from_parts(st->data, st->len);
   return sv_from_parts(sv->data + start, count);
 }
-#endif // __STRING_VIEW_VISTA_H
+#endif // __JMNUF_STRING_VISTA_H
 
 #endif // JMNUF_SRUT_IMPLEMENTATION

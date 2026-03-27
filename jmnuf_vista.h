@@ -42,8 +42,8 @@
  * @endcode
  */
 
-#ifndef __STRING_VIEW_VISTA_H
-#define __STRING_VIEW_VISTA_H
+#ifndef __JMNUF_STRING_VISTA_H
+#define __JMNUF_STRING_VISTA_H
 
 
 #include <stddef.h>
@@ -373,11 +373,11 @@ bool zstr_has_prefix(const char *zstr, const char *prefix);
  */
 size_t zstr_len(const char *zstr);
 
-#endif // __STRING_VIEW_VISTA_H
+#endif // __JMNUF_STRING_VISTA_H
 
 #ifdef JMNUF_VISTA_IMPLEMENTATION
 
-#define STRING_VIEW__ASCII_CASE_DIF ('a' - 'A')
+#define STR_VISTA__ASCII_CASE_DIF ('a' - 'A')
 
 static inline bool string_view__is_whitespace(char c) {
   return (c == ' '  || c == '\n' || c == '\r' ||
@@ -594,9 +594,9 @@ bool sv_eq_sv_ascii_ignore_case(String_View a, String_View b) {
   if (a.len != b.len) return false;
   for (size_t i = 0; i < a.len; ++i) {
     char ca = a.data[i];
-    if ('a' <= ca && ca <= 'z') ca -= STRING_VIEW__ASCII_CASE_DIF;
+    if ('a' <= ca && ca <= 'z') ca -= STR_VISTA__ASCII_CASE_DIF;
     char cb = b.data[i];
-    if ('a' <= cb && cb <= 'z') cb -= STRING_VIEW__ASCII_CASE_DIF;
+    if ('a' <= cb && cb <= 'z') cb -= STR_VISTA__ASCII_CASE_DIF;
     if (ca != cb) return false;
   }
   return true;
