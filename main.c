@@ -4,7 +4,12 @@ const char *program_name;
 #define BUILD_FOLDER "./build"
 #define TESTS_FOLDER "./tests"
 
-enum: uint8_t {
+enum Command_Kind {
+  COMMAND_NONE = 0,
+  COMMAND_TEST,
+};
+
+enum Test_Run_Flag {
   TEST_RUN_ALL   = 0,
   TEST_RUN_CROW  = 1 << 0,
   TEST_RUN_VISTA = 1 << 1,
@@ -12,33 +17,61 @@ enum: uint8_t {
 };
 
 void print_usage() {
-  printf("Usage: %s [FLAG] [TEST-NAME..]\n", program_name);
-  printf("FLAGS:\n");
-  printf("    -h,--help        ----    Print this help message\n");
-  printf("Test names:\n");
-  printf("    cah,crow         ----    Test jmnuf_ca.h, the dynamic arrays\n");
+  printf("Usage: %s <commands> [FLAGS]\n", program_name);
+  printf("COMMANDS:\n");
+  printf("    help               ----    Print this help message\n");
+  printf("    test [names..]     ----    Run tests\n");
+  printf("        Test Names:\n");
+  printf("            cah/caw    ----    Test ciao_ca.h, the dynamic arrays\n");
+  printf("            vista      ----    Test ciao_vista.h, the string views\n");
 }
 
 int main(int argc, char **argv) {
   program_name = shift(argv, argc);
 
+  if (argc == 0) {
+    nob_log(ERROR, "No command provided.");
+    print_usage();
+    return 1;
+  }
+
   uint8_t requested = 0;
+  Command_Kind command = COMMAND_NONE;
   while (argc) {
     const char *arg = shift(argv, argc);
 
-    if (strcmp(arg, "-h") == 0 || strcmp(arg, "--help") == 0) {
+    bool ok = true;
+    switch (command) {
+    case COMMAND_NONE: {
+      if (strcmp(arg, "help") == 0) {
+        print_usage();
+        return 0;
+      }
+
+      if (strcmp(arg, "test") == 0) {
+        command = COMMAND_TEST;
+        break;
+      }
+
+      ok = false;
+      nob_log(ERROR, "Unknown command provided: %s", arg);
       print_usage();
-      return 0;
+    } break;
+
+    case COMMAND_TEST: {
+      if (strcmp(arg, "cah") == 0 || strcmp(arg, "caw")) {
+        requested = requested | TEST_RUN_CROW;
+      } else if (strcmp(arg, "vista") == 0) {
+        requested = requested | TEST_RUN_VISTA;
+      } else {
+        ok = false;
+        nob_log(ERROR, "Unknown tests collection specified: %s" arg);
+        print_usage();
+      }
+    } break;
     }
 
-    if (strcmp(arg, "cah") == 0 || strcmp(arg, "crow")) {
-      requested = requested | TEST_RUN_CROW;
-      continue;
-    }
-
-    nob_log(ERROR, "Unknown argument: %s", arg);
-    print_usage();
-    return 1;
+    if (!ok) return 1;
   }
 
   bool run_all = requested == TEST_RUN_ALL;
