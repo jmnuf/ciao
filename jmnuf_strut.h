@@ -348,18 +348,18 @@ bool st_push_fmt(Strut *st, const char *fmt, ...) {
   va_start(ap, fmt);
   bool result = true;
 
-  char *literal_start = fmt;
-  char *p = fmt;
+  const char *literal_start = fmt;
+  const char *p = fmt;
   while (*p) {
     if (*p == '%') {
       if (p > literal_start) {
         if (!st_push_buf(st, literal_start, p - literal_start)) { result = false; goto defer; }
-        p++;
-
-        switch (*p) {
-        case '%':
-          if (!st_push(st, '%')) { result = false; goto defer }
-          break;
+      }
+      p++;
+      switch (*p) {
+      case '%':
+        if (!st_push(st, '%')) { result = false; goto defer; }
+        break;
         case 'd': {
           int d = va_arg(ap, int);
           if (d < 0) {
@@ -413,8 +413,8 @@ bool st_push_fmt(Strut *st, const char *fmt, ...) {
             if (!st_push(st, *p)) { result = false; goto defer; }
           }
         } break;
-        literal_start = p + 1;
       }
+      literal_start = p + 1;
     }
     p++;
   }
@@ -428,19 +428,22 @@ defer:
 
 bool st_push_ui64(Strut *st, uint64_t value) {
   if (st->oom) return false;
+  if (value == 0) return st_push(st, '0');
   char buf[32];
   int i = 0;
-  uint64_t u;
+  uint64_t u = value;
   do {
     buf[i++] = (char)((u % 10) + '0');
     u /= 10;
   } while (u > 0);
-  if (!st_push_buf(st, buf, i)) return false;
+  if (!st_ensure(st, i)) return false;
+  while (i) st->items[st->len++] = buf[--i];
   return true;
 }
 
 bool st_push_si64(Strut *st, int64_t n) {
   if (st->oom) return false;
+  if (n == 0) return st_push(st, '0');
   uint64_t u;
   if (n < 0) {
     if (!st_push(st, '-')) return false;
@@ -454,6 +457,7 @@ bool st_push_si64(Strut *st, int64_t n) {
 
 bool st_push_hex(Strut *st, uint64_t value, bool uppercase) {
   if (st->oom) return false;
+  if (value == 0) return st_push(st, '0');
   // A 64-bit integer in hex is 16 chars max (0xFFFFFFFFFFFFFFFF)
   char tmp[16];
   int len = 0;
@@ -463,9 +467,7 @@ bool st_push_hex(Strut *st, uint64_t value, bool uppercase) {
     value /= 16;
   } while(value > 0);
   if (!st_ensure(st, len)) return false;
-  while (len) {
-    st->items[st->len++] = tmp[len--];
-  }
+  while (len) st->items[st->len++] = tmp[--len];
   return true;
 }
 
