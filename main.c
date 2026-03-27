@@ -4,17 +4,17 @@ const char *program_name;
 #define BUILD_FOLDER "./build"
 #define TESTS_FOLDER "./tests"
 
-enum Command_Kind {
+typedef enum Command_Kind {
   COMMAND_NONE = 0,
   COMMAND_TEST,
-};
+} Command_Kind;
 
-enum Test_Run_Flag {
+typedef enum Test_Run_Flag {
   TEST_RUN_ALL   = 0,
   TEST_RUN_CROW  = 1 << 0,
   TEST_RUN_VISTA = 1 << 1,
   TEST_RUN_STRUT = 1 << 2,
-};
+} Test_Run_Flag;
 
 void print_usage() {
   printf("Usage: %s <commands> [FLAGS]\n", program_name);
@@ -65,7 +65,7 @@ int main(int argc, char **argv) {
         requested = requested | TEST_RUN_VISTA;
       } else {
         ok = false;
-        nob_log(ERROR, "Unknown tests collection specified: %s" arg);
+        nob_log(ERROR, "Unknown tests collection specified: %s", arg);
         print_usage();
       }
     } break;
