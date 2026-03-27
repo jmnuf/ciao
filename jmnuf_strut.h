@@ -81,7 +81,7 @@ String_View st_view_range(Strut *st, size_t start, size_t count);
 
 #endif // __JMNUF_STRUT_H
 
-#ifdef JMNUF_STRRUT_IMPLEMENTATION
+#ifdef JMNUF_STRUT_IMPLEMENTATION
 
 #ifndef ST_REALLOC
 static_assert(false, "ST_REALLOC macro requires to be specified");
@@ -346,4 +346,4 @@ String_View st_view_range(Strut *st, size_t start, size_t count) {
 }
 #endif // __JMNUF_STRING_VISTA_H
 
-#endif // JMNUF_SRUT_IMPLEMENTATION
+#endif // JMNUF_STRUT_IMPLEMENTATION
