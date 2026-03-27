@@ -83,7 +83,7 @@ int main(int argc, char **argv) {
     const char *input_paths[] = {
       TESTS_FOLDER"/test_ca.c",
       TESTS_FOLDER"/test.h",
-      "./jmnuf_ca.h",
+      "./ciao_ca.h",
     };
     if (nob_needs_rebuild(output_path, input_paths, ARRAY_LEN(input_paths))) {
       nob_cc(&cmd);
@@ -106,7 +106,7 @@ int main(int argc, char **argv) {
     const char *input_paths[] = {
       TESTS_FOLDER"/test_vista.c",
       TESTS_FOLDER"/test.h",
-      "./jmnuf_vista.h",
+      "./ciao_vista.h",
     };
     if (nob_needs_rebuild(output_path, input_paths, ARRAY_LEN(input_paths))) {
       nob_cc(&cmd);
