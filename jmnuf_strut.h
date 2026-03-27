@@ -306,7 +306,7 @@ bool st_ensure(Strut *st, size_t additional_count) {
     st->oom = true;
     return false;
   }
-  size_t required_cap = st->len + add_count;
+  size_t required_cap = st->len + additional_count;
   if (required_cap <= st->cap) return true;
 
   return st_reserve(st, required_cap);
@@ -503,13 +503,13 @@ char *st_detach(Strut *st) {
 #ifdef __JMNUF_STRING_VISTA_H
 String_View st_peek_sv(Strut *st, size_t n) {
   if (n >= st->len) return st_to_sv(st);
-  return sv_from_parts(st->data[(st->len - n)], n);
+  return sv_from_parts(st->items[(st->len - n)], n);
 }
 
 String_View st_view_range(Strut *st, size_t start, size_t count) {
   if (st->data == NULL || start >= st->len) return SV_NULL;
-  if (start + count > st->len) return sv_from_parts(st->data, st->len);
-  return sv_from_parts(sv->data + start, count);
+  if (start + count > st->len) return sv_from_parts(st->items, st->len);
+  return sv_from_parts(sv->items + start, count);
 }
 #endif // __JMNUF_STRING_VISTA_H
 

@@ -524,6 +524,7 @@ bool sv_find_sv(String_View haystack, String_View needle, size_t *index) {
 
 void sv_split_by_char(String_View haystack, char needle, String_View *left, String_View *right) {
   if (haystack.data == NULL) return;
+  size_t index;
   if (!sv_find_char(haystack, needle, &index)) {
     if (left) *left = haystack;
     if (right) *right = sv_from_parts(haystack.data + haystack.len, 0);
@@ -549,7 +550,7 @@ bool sv_has_sv_prefix(String_View sv, String_View prefix) {
   if (sv.data == NULL || prefix.data == NULL) return false;
   if (sv.len < prefix.len) return false;
   for (size_t i = 0; i < prefix.len; ++i) {
-    if (sv.data[sv.len - (prefix.len - i)] != prefix.data[i]) return false;
+    if (sv.data[i] != prefix.data[i]) return false;
   }
   return true;
 }
@@ -557,8 +558,9 @@ bool sv_has_sv_prefix(String_View sv, String_View prefix) {
 bool sv_has_sv_suffix(String_View sv, String_View suffix) {
   if (sv.data == NULL || suffix.data == NULL) return false;
   if (sv.len < suffix.len) return false;
+  char *d = sv.data + (sv.len - suffix.len);
   for (size_t i = 0; i < suffix.len; ++i) {
-    if (sv.data[i] != suffix.data[i]) return false;
+    if (d[i] != suffix.data[i]) return false;
   }
   return true;
 }
@@ -579,7 +581,7 @@ bool sv_has_char_prefix(String_View sv, char prefix) {
 
 bool sv_has_char_suffix(String_View sv, char suffix) {
   if (sv.data == NULL || sv.len == 0) return false;
-  return *(sv.data + (sv.len - 1)) == prefix;
+  return *(sv.data + (sv.len - 1)) == suffix;
 }
 
 bool sv_eq_sv(String_View a, String_View b) {
@@ -608,7 +610,7 @@ bool sv_eq_zstr(String_View a, const char *b) {
     const char *it = b;
     while (*it != 0) {
       len++;
-      it++;,
+      it++;
       if (len > a.len) return false;
     }
   }

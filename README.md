@@ -6,6 +6,8 @@ All libraries are under MIT license and forever will be.
 
 A set of helper single header files with the idea of remaining as agnostic to the platform as I can care about, which is not much to be honest. Also these follow the idea of using functions for defining most of the functionality and less macro magic.
 
+No I don't directly support C++, I'm not adding that extern C thing. Do it yourself if you need it but this project is based just in C and does not take into consideration C++.
+
 - jmnuf_ca.h : The crow cahs (caws) and the murder of crows grows. This is a dynamic array.
 - jmnuf_vista.h : Vistas into strings for ease of string handling. This is a string view.
 - jmnuf_strut.h : The model runway struts, this doesn't strike poses but it manages a string buffer. This is a string builder.

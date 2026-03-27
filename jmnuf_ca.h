@@ -523,7 +523,7 @@ static inline void *da__memmove(void *dest, const void *src, size_t n) {
 bool da_void_reserve(void **items_ref, size_t *cap, size_t item_size, size_t amount) {
   if (*cap >= amount) return true;
   size_t new_cap = *cap;
-  size_t new_cap = new_cap == 0 ? DA_INIT_CAP : (new_cap * 2);
+  new_cap = new_cap == 0 ? DA_INIT_CAP : (new_cap * 2);
   while (new_cap < amount) new_cap *= 2;
   void *new_items = DA_REALLOC(*items_ref, new_cap * item_size);
   if (new_items == NULL) return false;
@@ -552,7 +552,8 @@ bool da_void_reserve_exact(void **items_ref, size_t *cap, size_t len) {
 bool da_void_push(void **items_ref, size_t *len, size_t *cap, const void *item, size_t item_size) {
   size_t new_len = (*len) + 1;
   if (!da_void_reserve(items_ref, cap, item_size, new_len)) return false;
-  da__memcpy((char*)items + item_size * (*len), item, item_size);
+  char *items = (char*)*items_ref;
+  da__memcpy(items + item_size * (*len), item, item_size);
   *len = new_len;
   return true;
 }
