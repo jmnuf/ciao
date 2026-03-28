@@ -21,22 +21,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
- * @file jmnuf_ca.h
+ * @file ciao_ca.h
  * @brief Generic dynamic arrays using macros for ease of use.
  *
  * This library provides a macro-based approach to creating and managing
  * dynamic arrays of any type. Define an array using DynamicArray(T) where
  * T is your element type, then use the provided macros for operations.
  *
- * @note Requires DA_REALLOC and DA_FREE macros to be defined before including
+ * @note Requires CIAO_CAH_REALLOC and CIAO_CAH_FREE macros to be defined before including
  *       the implementation section.
  *
  * @par Usage Example:
  * @code
- * #define DA_REALLOC realloc
- * #define DA_FREE free
- * #define JMNUF_CAH_IMPLEMENTATION
- * #include "jmnuf_ca.h"
+ * #define CIAO_CAH_REALLOC realloc
+ * #define CIAO_CAH_FREE free
+ * #define CIAO_CAH_IMPLEMENTATION
+ * #define CIAO_STRIP_PREFIX
+ * #include "ciao_ca.h"
  *
  * DynamicArray(int) numbers = {0};
  * da_push(numbers, 42);
@@ -48,8 +49,8 @@
  * @endcode
  */
 
-#ifndef __DYNAMIC_ARRAY_CA_H
-#define __DYNAMIC_ARRAY_CA_H
+#ifndef __CIAO_CA_H
+#define __CIAO_CA_H
 
 #include <stddef.h>
 #include <stdbool.h>
@@ -59,9 +60,9 @@
  *
  * Can be overridden before including the header.
  */
-#ifndef DA_INIT_CAP
-#define DA_INIT_CAP (64)
-#endif // DA_INIT_CAP
+#ifndef CIAO_CAH_INIT_CAP
+#    define CIAO_CAH_INIT_CAP (64)
+#endif // CIAO_CAH_INIT_CAP
 
 /**
  * Defines a dynamic array structure for a given type.
@@ -81,14 +82,14 @@
  * my_array.cap = 0;
  * @endcode
  */
-#define DynamicArray(T) struct { T *items; size_t len; size_t cap; }
+#define CIAO_DynamicArray(T) struct { T *items; size_t len; size_t cap; }
 
 /**
  * Returns the size of elements in a dynamic array.
  * @param da Pointer to the dynamic array.
  * @return Size in bytes of a single element.
  */
-#define DA_ITEM_SIZE(da) sizeof(*(da)->items)
+#define CIAO_DA_ITEM_SIZE(da) sizeof(*(da)->items)
 
 /**
  * Returns a pointer to the element at the given index.
@@ -96,7 +97,7 @@
  * @param i Zero-based index of the element.
  * @return Pointer to the element at index i.
  */
-#define da_at(da, i) (&(da)->items[(i)])
+#define ciao_da_at(da, i) (&(da)->items[(i)])
 
 /**
  * Gets the element at the given index by value.
@@ -104,17 +105,17 @@
  * @param i Zero-based index of the element.
  * @return The element value at index i.
  */
-#define da_get(da, i) ((da)->items[(i)])
+#define ciao_da_get(da, i) ((da)->items[(i)])
 
 /**
  * Returns a pointer to the last element, or NULL if empty.
  * @param da Pointer to the dynamic array.
  * @return Pointer to the last element, or NULL if len is 0.
  */
-#define da_last(da) ((da)->len == 0 ? NULL : &(da)->items[(da)->len-1])
-#define da_lasti(da) ((da)->len <= 1 ? 0 : (da)->len-1)
+#define ciao_da_last(da) ((da)->len == 0 ? NULL : &(da)->items[(da)->len-1])
+#define ciao_da_lasti(da) ((da)->len <= 1 ? 0 : (da)->len-1)
 
-#define da_first(da) ((da)->len == 0 ? NULL : &(da)->items[0])
+#define ciao_da_first(da) ((da)->len == 0 ? NULL : &(da)->items[0])
 
 /**
  * Ensures the array has capacity for at least the specified number of items.
@@ -127,7 +128,7 @@
  * @param amount Minimum capacity to ensure.
  * @return true if successful or current capacity is sufficient, false on allocation failure.
  */
-bool da_void_reserve(void **items_ref, size_t *cap, size_t item_size, size_t amount);
+bool ciao_da_void_reserve(void **items_ref, size_t *cap, size_t item_size, size_t amount);
 
 /**
  * Frees the array memory and resets length and capacity.
@@ -136,7 +137,7 @@ bool da_void_reserve(void **items_ref, size_t *cap, size_t item_size, size_t amo
  * @param[in,out] len Pointer to the length variable (set to 0).
  * @param[in,out] cap Pointer to the capacity variable (set to 0).
  */
-void da_void_free(void **items_ref, size_t *len, size_t *cap);
+void ciao_da_void_free(void **items_ref, size_t *len, size_t *cap);
 
 /**
  * Reallocates to exactly fit the current length (no extra capacity).
@@ -146,7 +147,7 @@ void da_void_free(void **items_ref, size_t *len, size_t *cap);
  * @param len Exact size to allocate for.
  * @return true on success, false on allocation failure.
  */
-bool da_void_reserve_exact(void **items_ref, size_t *cap, size_t len);
+bool ciao_da_void_reserve_exact(void **items_ref, size_t *cap, size_t len);
 
 /**
  * Appends a single item to the end of the array.
@@ -158,7 +159,7 @@ bool da_void_reserve_exact(void **items_ref, size_t *cap, size_t len);
  * @param item_size Size of each element in bytes.
  * @return true on success, false on allocation failure.
  */
-bool da_void_push(void **items_ref, size_t *len, size_t *cap, const void *item, size_t item_size);
+bool ciao_da_void_push(void **items_ref, size_t *len, size_t *cap, const void *item, size_t item_size);
 
 /**
  * Inserts a single item at the specified index, shifting elements right.
@@ -171,7 +172,7 @@ bool da_void_push(void **items_ref, size_t *len, size_t *cap, const void *item, 
  * @param index Position to insert at (0 to len, inclusive).
  * @return true on success, false if index is out of range or allocation fails.
  */
-bool da_void_insert(void **items_ref, size_t *len, size_t *cap, const void *item_ref, size_t item_size, size_t index);
+bool ciao_da_void_insert(void **items_ref, size_t *len, size_t *cap, const void *item_ref, size_t item_size, size_t index);
 
 /**
  * Appends multiple items from an array to the dynamic array.
@@ -184,7 +185,7 @@ bool da_void_insert(void **items_ref, size_t *len, size_t *cap, const void *item
  * @param items_count Number of items to append.
  * @return true on success, false if source overlaps with destination or allocation fails.
  */
-bool da_void_push_many(void **items_ref, size_t *len, size_t *cap, const void *items_arr, size_t item_size, size_t items_count);
+bool ciao_da_void_push_many(void **items_ref, size_t *len, size_t *cap, const void *items_arr, size_t item_size, size_t items_count);
 
 /**
  * Removes and optionally returns the last element.
@@ -195,7 +196,7 @@ bool da_void_push_many(void **items_ref, size_t *len, size_t *cap, const void *i
  * @param item_size Size of each element in bytes.
  * @return true if an item was popped, false if array is empty.
  */
-bool da_void_pop(void *items, size_t *len, void *item_out_ref, size_t item_size);
+bool ciao_da_void_pop(void *items, size_t *len, void *item_out_ref, size_t item_size);
 
 /**
  * Removes and optionally returns the element at index using swap-remove.
@@ -209,7 +210,7 @@ bool da_void_pop(void *items, size_t *len, void *item_out_ref, size_t item_size)
  * @param index Position to remove at.
  * @return true if an item was removed, false if index is out of range.
  */
-bool da_void_pop_at_unordered(void *items, size_t *len, void *item_out_ref, size_t item_size, size_t index);
+bool ciao_da_void_pop_at_unordered(void *items, size_t *len, void *item_out_ref, size_t item_size, size_t index);
 
 /**
  * Removes and optionally returns the element at index, preserving order.
@@ -223,7 +224,7 @@ bool da_void_pop_at_unordered(void *items, size_t *len, void *item_out_ref, size
  * @param index Position to remove at.
  * @return true if an item was removed, false if index is out of range.
  */
-bool da_void_pop_at_ordered(void *items, size_t *len, void *item_out_ref, size_t item_size, size_t index);
+bool ciao_da_void_pop_at_ordered(void *items, size_t *len, void *item_out_ref, size_t item_size, size_t index);
 
 /**
  * Swaps two elements in the array by index.
@@ -235,7 +236,7 @@ bool da_void_pop_at_ordered(void *items, size_t *len, void *item_out_ref, size_t
  * @param j Second index.
  * @return true on success, false if indices are out of range.
  */
-bool da_void_swap(void *items, size_t len, size_t item_size, size_t i, size_t j);
+bool ciao_da_void_swap(void *items, size_t len, size_t item_size, size_t i, size_t j);
 
 /**
  * Removes the element at index, preserving order by shifting elements left.
@@ -245,7 +246,7 @@ bool da_void_swap(void *items, size_t len, size_t item_size, size_t i, size_t j)
  * @param item_size Size of each element in bytes.
  * @param index Position to remove at.
  */
-void da_void_remove_ordered(void *items, size_t *len, size_t item_size, size_t index);
+void ciao_da_void_remove_ordered(void *items, size_t *len, size_t item_size, size_t index);
 
 /**
  * Removes the element at index using swap-remove (order not preserved).
@@ -255,7 +256,7 @@ void da_void_remove_ordered(void *items, size_t *len, size_t item_size, size_t i
  * @param item_size Size of each element in bytes.
  * @param index Position to remove at.
  */
-void da_void_remove_unordered(void *items, size_t *len, size_t item_size, size_t index);
+void ciao_da_void_remove_unordered(void *items, size_t *len, size_t item_size, size_t index);
 
 /**
  * Finds the first element matching a predicate.
@@ -268,7 +269,7 @@ void da_void_remove_unordered(void *items, size_t *len, size_t item_size, size_t
  * @param user_context User data passed to predicate.
  * @return true if a match was found, false otherwise.
  */
-bool da_void_find(const void *items, size_t len, size_t item_size, bool (*predicate)(const void *item, const void *user_context), size_t *index, const void *user_context);
+bool ciao_da_void_find(const void *items, size_t len, size_t item_size, bool (*predicate)(const void *item, const void *user_context), size_t *index, const void *user_context);
 
 /**
  * Finds the first element matching a predicate in a typed dynamic array.
@@ -279,7 +280,7 @@ bool da_void_find(const void *items, size_t len, size_t item_size, bool (*predic
  * @param ctx User context passed to predicate.
  * @return true if a match was found, false otherwise.
  */
-#define da_find(da, predicate, index, ctx) da_void_find((da)->items, (da)->len, DA_ITEM_SIZE(da), (predicate), (index), (ctx))
+#define ciao_da_find(da, predicate, index, ctx) ciao_da_void_find((da)->items, (da)->len, CIAO_DA_ITEM_SIZE(da), (predicate), (index), (ctx))
 
 /**
  * Ensures the array has capacity for at least the specified number of items.
@@ -288,7 +289,7 @@ bool da_void_find(const void *items, size_t len, size_t item_size, bool (*predic
  * @param count Minimum total capacity to ensure.
  * @return true on success, false on allocation failure.
  */
-#define da_reserve(da, count) da_void_reserve((void**)&(da)->items, &(da)->cap, DA_ITEM_SIZE(da), (count))
+#define ciao_da_reserve(da, count) ciao_da_void_reserve((void**)&(da)->items, &(da)->cap, CIAO_DA_ITEM_SIZE(da), (count))
 
 /**
  * Reallocates to exactly fit the current length (no extra capacity).
@@ -297,7 +298,7 @@ bool da_void_find(const void *items, size_t len, size_t item_size, bool (*predic
  * @param count Expected final length (typically (da)->len).
  * @return true on success, false on allocation failure.
  */
-#define da_reserve_exact(da, count) da_void_reserve_exact((void**)&(da)->items, &(da)->cap, (count))
+#define ciao_da_reserve_exact(da, count) ciao_da_void_reserve_exact((void**)&(da)->items, &(da)->cap, (count))
 
 /**
  * Shrinks capacity to match current length, freeing excess memory.
@@ -305,7 +306,7 @@ bool da_void_find(const void *items, size_t len, size_t item_size, bool (*predic
  * @param da Pointer to the dynamic array.
  * @return true on success, false on allocation failure.
  */
-#define da_shrink(da) da_reserve_exact((da), ((da)->len))
+#define ciao_da_shrink(da) ciao_da_reserve_exact((da), ((da)->len))
 
 /**
  * Ensures space for additional elements beyond current length.
@@ -314,7 +315,7 @@ bool da_void_find(const void *items, size_t len, size_t item_size, bool (*predic
  * @param additional_count Number of extra elements to accommodate.
  * @return true on success, false on allocation failure.
  */
-#define da_ensure(da, additional_count) da_reserve((da), ((da)->len + (additional_count)))
+#define ciao_da_ensure(da, additional_count) ciao_da_reserve((da), ((da)->len + (additional_count)))
 
 /**
  * Pushes a value of an explicitly specified type onto the array.
@@ -324,7 +325,7 @@ bool da_void_find(const void *items, size_t len, size_t item_size, bool (*predic
  * @param value The value to append.
  * @return true on success, false on allocation failure.
  */
-#define da_push_typed(T, da, value) da_void_push((void**)&(da)->items, &(da)->len, &(da)->cap, (T[]){(value)}, DA_ITEM_SIZE(da))
+#define ciao_da_push_typed(T, da, value) ciao_da_void_push((void**)&(da)->items, &(da)->len, &(da)->cap, (T[]){(value)}, CIAO_DA_ITEM_SIZE(da))
 
 /**
  * Inserts a value of an explicitly specified type at a given index.
@@ -335,7 +336,7 @@ bool da_void_find(const void *items, size_t len, size_t item_size, bool (*predic
  * @param index Position to insert at.
  * @return true on success, false if index is out of range or allocation fails.
  */
-#define da_insert_typed(T, da, value, index) da_void_insert((void**)&(da)->items, &(da)->len, &(da)->cap, (T[]){(value)}, DA_ITEM_SIZE(da), (index))
+#define ciao_da_insert_typed(T, da, value, index) ciao_da_void_insert((void**)&(da)->items, &(da)->len, &(da)->cap, (T[]){(value)}, CIAO_DA_ITEM_SIZE(da), (index))
 
 /**
  * Swaps two elements in the array by index.
@@ -345,17 +346,17 @@ bool da_void_find(const void *items, size_t len, size_t item_size, bool (*predic
  * @param j Second index.
  * @return true on success, false if indices are out of range.
  */
-#define da_swap(da, i, j) da_void_swap((da)->items, (da)->len, DA_ITEM_SIZE(da), (i), (j))
+#define ciao_da_swap(da, i, j) ciao_da_void_swap((da)->items, (da)->len, CIAO_DA_ITEM_SIZE(da), (i), (j))
 
 #if defined(__GNUC__) || defined(__clang__) || (defined(_MSC_VER) && _MSC_VER >= 1930)
    // GCC, Clang, and MSVC 2022+ support __typeof__
-#  define DA_TYPEOF(x) __typeof__(x)
+#  define CIAO_DA_TYPEOF(x) __typeof__(x)
 #elif defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L
    // C23 Standard support
-#  define DA_TYPEOF(x) typeof(x)
+#  define CIAO_DA_TYPEOF(x) typeof(x)
 #endif
 
-#ifdef DA_TYPEOF
+#ifdef CIAO_DA_TYPEOF
 /**
  * Pushes a value onto the array, inferring type from the array.
  *
@@ -365,7 +366,7 @@ bool da_void_find(const void *items, size_t len, size_t item_size, bool (*predic
  * @param value The value to append (type inferred from array element type).
  * @return true on success, false on allocation failure.
  */
-#  define da_push(da, value) da_push_typed(DA_TYPEOF(*(da)->items), (da), (value))
+#  define ciao_da_push(da, value) ciao_da_push_typed(CIAO_DA_TYPEOF(*(da)->items), (da), (value))
 /**
  * Inserts a value at a given index, inferring type from the array.
  *
@@ -376,10 +377,10 @@ bool da_void_find(const void *items, size_t len, size_t item_size, bool (*predic
  * @param index Position to insert at.
  * @return true on success, false if index is out of range or allocation fails.
  */
-#  define da_insert(da, value, index) da_insert_typed(DA_TYPEOF(*(da)->items), (da), (value), (index))
-#elif !defined(JMNUF_CAH_IGNORE_MISSING_TYPEOF)
-#  warning "Compiler does not support known typeof extraction unable to create da_push(da, value) and da_insert(da, value, index) macros"
-#endif // DA_TYPEOF
+#  define ciao_da_insert(da, value, index) ciao_da_insert_typed(CIAO_DA_TYPEOF(*(da)->items), (da), (value), (index))
+#elif !defined(CIAO_CAH_IGNORE_MISSING_TYPEOF)
+#  warning "Compiler does not support known typeof extraction unable to create ciao_da_push(da, value) and ciao_da_insert(da, value, index) macros"
+#endif // CIAO_DA_TYPEOF
 
 /**
  * Pushes elements from a C array onto the dynamic array.
@@ -389,16 +390,16 @@ bool da_void_find(const void *items, size_t len, size_t item_size, bool (*predic
  * @param arr_len Number of elements in the source array.
  * @return true on success, false if allocation fails.
  */
-#define da_push_arr(da, array, arr_len) da_void_push_many((void**)&(da)->items, &(da)->len, &(da)->cap, (array), DA_ITEM_SIZE(da), arr_len)
+#define ciao_da_push_arr(da, array, arr_len) ciao_da_void_push_many((void**)&(da)->items, &(da)->len, &(da)->cap, (array), CIAO_DA_ITEM_SIZE(da), arr_len)
 
 /**
  * Pushes all elements from one dynamic array onto another.
  *
- * @param da_a Destination dynamic array.
- * @param da_b Source dynamic array.
+ * @param ciao_da_a Destination dynamic array.
+ * @param ciao_da_b Source dynamic array.
  * @return true on success, false if allocation fails.
  */
-#define da_push_da(da_a, da_b) da_push_arr((da_a), ((da_b)->items), ((da_b)->len))
+#define ciao_da_push_da(da_a, da_b) ciao_da_push_arr((da_a), ((da_b)->items), ((da_b)->len))
 
 /**
  * Pops the last element from the array.
@@ -407,7 +408,7 @@ bool da_void_find(const void *items, size_t len, size_t item_size, bool (*predic
  * @param item_out Variable to store the popped element.
  * @return true if an element was popped, false if array is empty.
  */
-#define da_pop(da, item_out) da_void_pop((da)->items, &(da)->len, (item_out), DA_ITEM_SIZE(da))
+#define ciao_da_pop(da, item_out) ciao_da_void_pop((da)->items, &(da)->len, (item_out), CIAO_DA_ITEM_SIZE(da))
 
 /**
  * Pops the element at a specific index, preserving order.
@@ -417,7 +418,7 @@ bool da_void_find(const void *items, size_t len, size_t item_size, bool (*predic
  * @param item_out Variable to store the popped element.
  * @return true if an element was popped, false if index is out of range.
  */
-#define da_pop_at_ordered(da, index, item_out) da_void_pop_at_ordered((da)->items, &(da)->len, (item_out), DA_ITEM_SIZE(da), (index))
+#define ciao_da_pop_at_ordered(da, index, item_out) ciao_da_void_pop_at_ordered((da)->items, &(da)->len, (item_out), CIAO_DA_ITEM_SIZE(da), (index))
 
 /**
  * Pops the element at a specific index using swap-remove.
@@ -427,21 +428,21 @@ bool da_void_find(const void *items, size_t len, size_t item_size, bool (*predic
  * @param item_out Variable to store the popped element.
  * @return true if an element was popped, false if index is out of range.
  */
-#define da_pop_at_unordered(da, index, item_out) da_void_pop_at_unordered((da)->items, &(da)->len, (item_out), DA_ITEM_SIZE(da), (index))
+#define ciao_da_pop_at_unordered(da, index, item_out) ciao_da_void_pop_at_unordered((da)->items, &(da)->len, (item_out), CIAO_DA_ITEM_SIZE(da), (index))
 
 /**
  * Frees all memory associated with the array.
  *
  * @param da Pointer to the dynamic array.
  */
-#define da_free(da) da_void_free((void**)&(da)->items, &(da)->len, &(da)->cap)
+#define ciao_da_free(da) ciao_da_void_free((void**)&(da)->items, &(da)->len, &(da)->cap)
 
 /**
  * Sets the length to zero, effectively clearing all elements without freeing memory.
  *
  * @param da Pointer to the dynamic array.
  */
-#define da_clear(da) do { (da)->len = 0; } while (0)
+#define ciao_da_clear(da) do { (da)->len = 0; } while (0)
 
 /**
  * Clears the destination array and copies all elements from the source.
@@ -449,7 +450,7 @@ bool da_void_find(const void *items, size_t len, size_t item_size, bool (*predic
  * @param dest_da Destination dynamic array (cleared first).
  * @param src_da Source dynamic array.
  */
-#define da_copy(dest_da, src_da) ((dest_da)->len = 0, da_push_da((dest_da), (src_da)))
+#define ciao_da_copy(dest_da, src_da) ((dest_da)->len = 0, ciao_da_push_da((dest_da), (src_da)))
 
 /**
  * Iterates over all elements in the array with a typed pointer.
@@ -460,12 +461,12 @@ bool da_void_find(const void *items, size_t len, size_t item_size, bool (*predic
  *
  * @par Example:
  * @code
- * da_foreach(int, it, my_array) {
+ * ciao_da_foreach(int, it, my_array) {
  *     printf("%d\n", *it);
  * }
  * @endcode
  */
-#define da_foreach(T, it, da) for (T *it = (da)->items; it < (da)->items + (da)->len; ++it)
+#define ciao_da_foreach(T, it, da) for (T *it = (da)->items; it < (da)->items + (da)->len; ++it)
 
 /**
  * Iterates over all elements in the array with a const typed pointer.
@@ -474,7 +475,7 @@ bool da_void_find(const void *items, size_t len, size_t item_size, bool (*predic
  * @param it Iterator variable name.
  * @param da Pointer to the dynamic array.
  */
-#define da_foreach_const(T, it, da) for (const T *it = (da)->items; it < (da)->items + (da)->len; ++it)
+#define ciao_da_foreach_const(T, it, da) for (const T *it = (da)->items; it < (da)->items + (da)->len; ++it)
 
 /**
  * Iterates over array indices.
@@ -484,26 +485,76 @@ bool da_void_find(const void *items, size_t len, size_t item_size, bool (*predic
  *
  * @par Example:
  * @code
- * da_fori(i, my_array) {
- *     printf("%zu: %d\n", i, da_get(my_array, i));
+ * ciao_da_fori(i, my_array) {
+ *     printf("%zu: %d\n", i, ciao_da_get(my_array, i));
  * }
  * @endcode
  */
-#define da_fori(it, da) for (size_t it = 0; it < (da)->len; ++it)
+#define ciao_da_fori(it, da) for (size_t it = 0; it < (da)->len; ++it)
 
-#endif // __DYNAMIC_ARRAY_CA_H
+#endif // __CIAO_CA_H
 
-#ifdef JMNUF_CAH_IMPLEMENTATION
+#if (defined(CIAO_CAH_STRIP_PREFIX) || defined(CIAO_STRIP_PREFIX)) && !defined(__CIAO_CAH_STRIP_PREFIX)
+#define __CIAO_CAH_STRIP_PREFIX
 
-#ifndef DA_REALLOC
-static_assert(false, "DA_REALLOC macro requires to be specified");
-#endif //  DA_REALLOC
+#define CAH_INIT_CAP CIAO_CAH_INIT_CAP
+#define DynamicArray CIAO_DynamicArray
+#define DA_ITEM_SIZE CIAO_DA_ITEM_SIZE
+#define da_at ciao_da_at
+#define da_get ciao_da_get
+#define da_last ciao_da_last
+#define da_lasti ciao_da_lasti
+#define da_first ciao_da_first
+#define da_void_reserve ciao_da_void_reserve
+#define da_void_free ciao_da_void_free
+#define da_void_reserve_exact ciao_da_void_reserve_exact
+#define da_void_push ciao_da_void_push
+#define da_void_insert ciao_da_void_insert
+#define da_void_push_many ciao_da_void_push_many
+#define da_void_pop ciao_da_void_pop
+#define da_void_pop_at_unordered ciao_da_void_pop_at_unordered
+#define da_void_pop_at_ordered ciao_da_void_pop_at_ordered
+#define da_void_swap ciao_da_void_swap
+#define da_void_remove_ordered ciao_da_void_remove_ordered
+#define da_void_remove_unordered ciao_da_void_remove_unordered
+#define da_void_find ciao_da_void_find
+#define da_find ciao_da_find
+#define da_reserve ciao_da_reserve
+#define da_reserve_exact ciao_da_reserve_exact
+#define da_shrink ciao_da_shrink
+#define da_ensure ciao_da_ensure
+#define da_push_typed ciao_da_push_typed
+#define da_insert_typed ciao_da_insert_typed
+#define da_swap ciao_da_swap
+#ifdef CIAO_DA_TYPEOF
+#    define da_push ciao_da_push
+#    define da_insert ciao_da_insert
+#endif // CIAO_DA_TYPEOF
+#define da_push_arr ciao_da_push_arr
+#define da_push_da ciao_da_push_da
+#define da_pop ciao_da_pop
+#define da_pop_at_ordered ciao_da_pop_at_ordered
+#define da_pop_at_unordered ciao_da_pop_at_unordered
+#define da_free ciao_da_free
+#define da_clear ciao_da_clear
+#define da_copy ciao_da_copy
+#define da_foreach ciao_da_foreach
+#define da_foreach_const ciao_da_foreach_const
+#define da_fori ciao_da_fori
 
-#ifndef DA_FREE
-static_assert(false, "DA_FREE macro requires to be specified");
-#endif //  DA_FREE
+#endif // CIAO_CAH_STRIP_PREFIX
 
-static inline void *da__memcpy(void *restrict dest, void *restrict src, size_t n) {
+#ifdef CIAO_CAH_IMPLEMENTATION
+
+#ifndef CIAO_CAH_MEM_REALLOC
+static_assert(false, "CIAO_CAH_MEM_REALLOC macro requires to be specified");
+#endif //  CIAO_CAH_MEM_REALLOC
+
+#ifndef CIAO_CAH_MEM_FREE
+static_assert(false, "CIAO_CAH_MEM_FREE macro requires to be specified");
+#endif //  CIAO_CAH_MEM_FREE
+
+static inline void *ciao__cah_mem_copy(void *restrict dest, void *restrict src, size_t n) {
   char *dest_buf = (char*)dest;
   char *src_buf  = (char*)src;
   for (size_t i = 0; i < n; ++i) {
@@ -512,7 +563,7 @@ static inline void *da__memcpy(void *restrict dest, void *restrict src, size_t n
   return dest_buf;
 }
 
-static inline void *da__memmove(void *dest, const void *src, size_t n) {
+static inline void *ciao__cah_mem_move(void *dest, const void *src, size_t n) {
     unsigned char *d = (unsigned char *)dest;
     const unsigned char *s = (const unsigned char *)src;
     if (d < s) {
@@ -524,110 +575,120 @@ static inline void *da__memmove(void *dest, const void *src, size_t n) {
     return dest;
 }
 
-bool da_void_reserve(void **items_ref, size_t *cap, size_t item_size, size_t amount) {
+bool ciao_da_void_reserve(void **items_ref, size_t *cap, size_t item_size, size_t amount) {
   if (*cap >= amount) return true;
-  size_t new_cap = *cap;
-  new_cap = new_cap == 0 ? DA_INIT_CAP : (new_cap * 2);
-  while (new_cap < amount) new_cap *= 2;
-  void *new_items = DA_REALLOC(*items_ref, new_cap * item_size);
-  if (new_items == NULL) return false;
-  *items_ref = new_items;
-  *cap = new_cap;
+  size_t ncap = *cap == 0 ? CIAO_CAH_INIT_CAP : (*cap);
+  while (ncap < amount) {
+    if (ncap > SIZE_MAX / 2) {
+      ncap = amount;
+      break;
+    }
+    ncap *= 2;
+  }
+  void *nptr = CIAO_CAH_MEM_REALLOC(*items_ref, ncap * item_size);
+  // Last ditch effort
+  if (nptr == NULL && ncap > amount) {
+    ncap = amount;
+    nptr = (char*)CIAO_CAH_MEM_REALLOC(*items_ref, ncap);
+  }
+  if (nptr == NULL) return false;
+  *items_ref = nptr;
+  *cap = ncap;
   return true;
 }
 
-void da_void_free(void **items_ref, size_t *len, size_t *cap) {
+void ciao_da_void_free(void **items_ref, size_t *len, size_t *cap) {
   if (*items_ref) {
-    DA_FREE(*items_ref);
+    CIAO_CAH_MEM_FREE(*items_ref);
     *items_ref = NULL;
   }
   *len = 0;
   *cap = 0;
 }
 
-bool da_void_reserve_exact(void **items_ref, size_t *cap, size_t len) {
-  void *new_ptr = DA_REALLOC(*items_ref, len);
+bool ciao_da_void_reserve_exact(void **items_ref, size_t *cap, size_t len) {
+  void *new_ptr = CIAO_CAH_MEM_REALLOC(*items_ref, len);
   if (!new_ptr) return false;
   *items_ref = new_ptr;
   *cap = len;
   return true;
 }
 
-bool da_void_push(void **items_ref, size_t *len, size_t *cap, const void *item, size_t item_size) {
+bool ciao_da_void_push(void **items_ref, size_t *len, size_t *cap, const void *item, size_t item_size) {
   size_t new_len = (*len) + 1;
-  if (!da_void_reserve(items_ref, cap, item_size, new_len)) return false;
+  if (!ciao_da_void_reserve(items_ref, cap, item_size, new_len)) return false;
   char *items = (char*)*items_ref;
-  da__memcpy(items + item_size * (*len), (void*)item, item_size);
+  ciao__cah_mem_copy(items + item_size * (*len), (void*)item, item_size);
   *len = new_len;
   return true;
 }
 
-bool da_void_insert(void **items_ref, size_t *len, size_t *cap, const void *item_ref, size_t item_size, size_t index) {
+bool ciao_da_void_insert(void **items_ref, size_t *len, size_t *cap, const void *item_ref, size_t item_size, size_t index) {
   if (index > *len) return false;
   size_t new_len = (*len) + 1;
-  if (!da_void_reserve(items_ref, cap, item_size, new_len)) return false;
+  if (!ciao_da_void_reserve(items_ref, cap, item_size, new_len)) return false;
   char *items = (char*)*items_ref;
   if (index < *len) {
     size_t move_count = (*len - index) * item_size;
-    da__memmove(items + (index + 1) * item_size, items + index * item_size, move_count);
+    ciao__cah_mem_move(items + (index + 1) * item_size, items + index * item_size, move_count);
   }
-  da__memcpy(items + index * item_size, (void*)item_ref, item_size);
+  ciao__cah_mem_copy(items + index * item_size, (void*)item_ref, item_size);
   *len = new_len;
   return true;
 }
 
-bool da_void_push_many(void **items_ref, size_t *len, size_t *cap, const void *items_arr, size_t item_size, size_t items_count) {
+bool ciao_da_void_push_many(void **items_ref, size_t *len, size_t *cap, const void *items_arr, size_t item_size, size_t items_count) {
   size_t new_len = (*len) + items_count;
   if (*items_ref == items_arr) return false;
-  if (!da_void_reserve(items_ref, cap, item_size, new_len)) return false;
+  if (!ciao_da_void_reserve(items_ref, cap, item_size, new_len)) return false;
   char *da_items = (char*)*items_ref;
   da_items += (*len) * item_size;
-  da__memcpy(da_items, (void*)items_arr, items_count * item_size);
+  ciao__cah_mem_copy(da_items, (void*)items_arr, items_count * item_size);
   *len = new_len;
   return true;
 }
 
-bool da_void_pop(void *items, size_t *len, void *item_out_ref, size_t item_size) {
+bool ciao_da_void_pop(void *items, size_t *len, void *item_out_ref, size_t item_size) {
   if (*len == 0) return false;
   size_t new_len = (*len) - 1;
   char *item_in = ((char*)items) + (new_len * item_size);
-  if (item_out_ref != NULL) da__memcpy(item_out_ref, item_in, item_size);
+  if (item_out_ref != NULL) ciao__cah_mem_copy(item_out_ref, item_in, item_size);
   *len = new_len;
   return true;
 }
 
-bool da_void_pop_at_unordered(void *items, size_t *len, void *item_out_ref, size_t item_size, size_t index) {
+bool ciao_da_void_pop_at_unordered(void *items, size_t *len, void *item_out_ref, size_t item_size, size_t index) {
   if (index >= *len) return false;
   if (index < (*len - 1)) {
-    if (!da_void_swap(items, *len, item_size, index, *len - 1)) return false;
+    if (!ciao_da_void_swap(items, *len, item_size, index, *len - 1)) return false;
   }
-  return da_void_pop(items, len, item_out_ref, item_size);
+  return ciao_da_void_pop(items, len, item_out_ref, item_size);
 }
 
-bool da_void_pop_at_ordered(void *items, size_t *len, void *item_out_ref, size_t item_size, size_t index) {
+bool ciao_da_void_pop_at_ordered(void *items, size_t *len, void *item_out_ref, size_t item_size, size_t index) {
   if (index >= *len) return false;
-  if (item_out_ref) da__memcpy(item_out_ref, (char*)items + (index * item_size), item_size);
-  da_void_remove_ordered(items, len, item_size, index);
+  if (item_out_ref) ciao__cah_mem_copy(item_out_ref, (char*)items + (index * item_size), item_size);
+  ciao_da_void_remove_ordered(items, len, item_size, index);
   return true;
 }
 
-bool da_void_swap(void *items, size_t len, size_t item_size, size_t i, size_t j) {
+bool ciao_da_void_swap(void *items, size_t len, size_t item_size, size_t i, size_t j) {
   if (i > len || j > len) return false;
   char temp[item_size];
   char *buf = (char*)items;
   char *item_a = buf + (i * item_size);
   char *item_b = buf + (j * item_size);
-  da__memcpy(temp, item_a, item_size);
-  da__memcpy(item_a, item_b, item_size);
-  da__memcpy(item_b, temp, item_size);
+  ciao__cah_mem_copy(temp, item_a, item_size);
+  ciao__cah_mem_copy(item_a, item_b, item_size);
+  ciao__cah_mem_copy(item_b, temp, item_size);
   return true;
 }
 
-void da_void_remove_ordered(void *items, size_t *len, size_t item_size, size_t index) {
+void ciao_da_void_remove_ordered(void *items, size_t *len, size_t item_size, size_t index) {
   if (*len == 0 || index >= *len) return;
   if (index < (*len - 1)) {
     size_t move_count = (*len - index - 1) * item_size;
-    da__memmove(
+    ciao__cah_mem_move(
       (char*)items + index * item_size,
       (char*)items + (index+1) * item_size,
       move_count
@@ -636,13 +697,13 @@ void da_void_remove_ordered(void *items, size_t *len, size_t item_size, size_t i
   *len -= 1;
 }
 
-void da_void_remove_unordered(void *items, size_t *len, size_t item_size, size_t index) {
+void ciao_da_void_remove_unordered(void *items, size_t *len, size_t item_size, size_t index) {
   if (*len == 0 || index >= *len) return;
-  if (index < (*len - 1)) da_void_swap(items, *len, item_size, index, *len - 1);
+  if (index < (*len - 1)) ciao_da_void_swap(items, *len, item_size, index, *len - 1);
   *len -= 1;
 }
 
-bool da_void_find(const void *items, size_t len, size_t item_size, bool (*predicate)(const void *item, const void *user_context), size_t *index, const void *user_context) {
+bool ciao_da_void_find(const void *items, size_t len, size_t item_size, bool (*predicate)(const void *item, const void *user_context), size_t *index, const void *user_context) {
   if (items == NULL || predicate == NULL) return false;
   const unsigned char *start = (const unsigned char*)items;
   for (size_t i = 0; i < len; ++i) {
@@ -655,4 +716,4 @@ bool da_void_find(const void *items, size_t len, size_t item_size, bool (*predic
 }
 
 
-#endif // JMNUF_CAH_IMPLEMENTATION
+#endif // CIAO_CAH_IMPLEMENTATION

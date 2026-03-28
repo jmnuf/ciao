@@ -1,7 +1,8 @@
 #include "test.h"
 
-#define JMNUF_VISTA_IMPLEMENTATION
-#include "jmnuf_vista.h"
+#define CIAO_VISTA_IMPLEMENTATION
+#define CIAO_STRIP_PREFIX
+#include "ciao_vista.h"
 
 #include <ctype.h>
 
@@ -253,5 +254,5 @@ void register_tests(Tests_Registry *registry) {
 }
 
 const char *get_tests_title() {
-  return "jmnuf_vista.h : The beach in La Ceiba is a great vista";
+  return "ciao_vista.h : The beach in La Ceiba is a great vista";
 }

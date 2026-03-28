@@ -1,10 +1,11 @@
 #include "test.h"
 
-#define DA_INIT_CAP 16
-#define DA_REALLOC realloc
-#define DA_FREE    free
-#define JMNUF_CAH_IMPLEMENTATION
-#include "jmnuf_ca.h"
+#define CIAO_CAH_INIT_CAP 16
+#define CIAO_CAH_MEM_REALLOC realloc
+#define CIAO_CAH_MEM_FREE    free
+#define CIAO_CAH_IMPLEMENTATION
+#define CIAO_STRIP_PREFIX
+#include "ciao_ca.h"
 
 struct Foo { int a, b; };
 
@@ -16,15 +17,15 @@ TEST_FN(basic_push_and_pop) {
     log_info("Test failure for lack of RAM. Brother how?");
   }
 
-  TEST_CHECK(xs.cap == DA_INIT_CAP) {
-    log_warning("First allocation did not allocate DA_INIT_CAP (%d) space", DA_INIT_CAP);
+  TEST_CHECK(xs.cap == CAH_INIT_CAP) {
+    log_warning("First allocation did not allocate CAH_INIT_CAP (%d) space", CAH_INIT_CAP);
   }
 
   TEST_CHECK(xs.len == 1 && xs.items[0] == 34) {
     log_error("First pushed item has incorrect value");
   }
 
-  TEST_CHECK(da_push(&xs, 35) && xs.len == 2 && xs.cap == DA_INIT_CAP) {
+  TEST_CHECK(da_push(&xs, 35) && xs.len == 2 && xs.cap == CAH_INIT_CAP) {
     log_error("Second push should just increment len");
   }
 
@@ -371,5 +372,5 @@ void register_tests(Tests_Registry *registry) {
 }
 
 const char *get_tests_title() {
-  return "jmnuf_ca.h : The crow goes both cah and caw";
+  return "ciao_ca.h : The crow goes both cah and caw";
 }
