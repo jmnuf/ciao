@@ -8,6 +8,6 @@ A set of helper single header files with the idea of remaining as agnostic to th
 
 No I don't directly support C++, I'm not adding that extern C thing. Do it yourself if you need it but this project is based just in C and does not take into consideration C++.
 
-- jmnuf_ca.h : The crow cahs (caws) and the murder of crows grows. This is a dynamic array.
-- jmnuf_vista.h : Vistas into strings for ease of string handling. This is a string view.
-- jmnuf_strut.h : The model runway struts, this doesn't strike poses but it manages a string buffer. This is a string builder.
+- ciao_ca.h    : The crow cahs (caws) and the murder of crows grows. This is a dynamic array.
+- ciao_vista.h : Vistas into strings for ease of string handling. This is a string view.
+- ciao_strut.h : The model runway struts, this doesn't strike poses but it manages a string buffer. This is a string builder.
