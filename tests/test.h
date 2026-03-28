@@ -46,8 +46,15 @@ if (!test.failed && (cond)) {                                                   
 
 #define TEST_QUIT_EARLY() do { test.quit_early = true; goto test_end; } while (0)
 
-#define TEST_CASE_PRINT_RESULT() \
-fprintf(stderr, "%s [%s]: %zu/%zu\n", (test.checks_count == test.checks_passed ? "✅" : "❌"), test.name, test.checks_count, test.checks_passed)
+#define TEST_CASE_PRINT_RESULT()                                                                    \
+do {                                                                                                \
+  if (test.checks_count == 0) {                                                                     \
+    fprintf(stderr, "⚠️ [%s]: Test did no checks\n", test.name);                                    \
+  } else {                                                                                          \
+    const char *emoji = (test.checks_count == test.checks_passed ? "✅" : "❌");                   \
+    fprintf(stderr, "%s [%s]: %zu/%zu\n", emoji, test.name, test.checks_count, test.checks_passed); \
+  }                                                                                                 \
+} while (0)
 
 #define TEST_EPILOGUE()                                                                      \
 test_end:                                                                                    \
@@ -84,8 +91,10 @@ int main(void) {
   printf("--------------------------------------------------\n");
 
   registry.passed = 0;
+  Test_Case base_test = {0};
   nob_da_foreach(Test_Fn_Reg, it, &registry) {
-    if (it->fn((Test_Case) { .name = it->name })) registry.passed++;
+    base_test.name = it->name;
+    if (it->fn(base_test)) registry.passed++;
   }
 
   if (registry.items) free(registry.items);

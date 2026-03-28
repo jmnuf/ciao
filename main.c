@@ -63,6 +63,8 @@ int main(int argc, char **argv) {
         requested = requested | TEST_RUN_CROW;
       } else if (strcmp(arg, "vista") == 0) {
         requested = requested | TEST_RUN_VISTA;
+      } else if (strcmp(arg, "strut") == 0) {
+        requested = requested | TEST_RUN_STRUT;
       } else {
         ok = false;
         nob_log(ERROR, "Unknown tests collection specified: %s", arg);
@@ -107,6 +109,26 @@ int main(int argc, char **argv) {
       TESTS_FOLDER"/test_vista.c",
       TESTS_FOLDER"/test.h",
       "./ciao_vista.h",
+    };
+    if (nob_needs_rebuild(output_path, input_paths, ARRAY_LEN(input_paths))) {
+      nob_cc(&cmd);
+      nob_cc_flags(&cmd);
+      cmd_append(&cmd, "-I.");
+      cmd_append(&cmd, "-Wno-unused-label");
+      nob_cc_inputs(&cmd, input_paths[0]);
+      nob_cc_output(&cmd, output_path);
+      if (!cmd_run(&cmd)) return_defer(1);
+    }
+    cmd_append(&cmd, output_path);
+    if (!cmd_run(&cmd)) result = 1;
+  }
+
+  if (run_all || requested & TEST_RUN_STRUT) {
+    const char *output_path = BUILD_FOLDER"/strut";
+    const char *input_paths[] = {
+      TESTS_FOLDER"/test_strut.c",
+      TESTS_FOLDER"/test.h",
+      "./ciao_strut.h",
     };
     if (nob_needs_rebuild(output_path, input_paths, ARRAY_LEN(input_paths))) {
       nob_cc(&cmd);
