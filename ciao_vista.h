@@ -31,6 +31,7 @@
  * @par Usage Example:
  * @code
  * #define CIAO_VISTA_IMPLEMENTATION
+ * #define CIAO_STRIP_PREFIX
  * #include "ciao_vista.h"
  *
  * const char *text = "  hello world  ";

@@ -29,14 +29,15 @@
  * #define CIAO_ST_MEM_REALLOC realloc
  * #define CIAO_ST_MEM_FREE free
  * #define CIAO_STRUT_IMPLEMENTATION
+ * #define CIAO_STRIP_PREFIX
  * #include "ciao_strut.h"
  *
- * Ciao_Strut str = {0};
- * ciao_st_push_fmt(&str, "Hello, %s!", "world");
- * ciao_st_push_zstr(&str, " Welcome.");
- * ciao_st_push_null(&str);
+ * Strut str = {0};
+ * st_push_fmt(&str, "Hello, %s!", "world");
+ * st_push_zstr(&str, " Welcome.");
+ * st_push_null(&str);
  * printf("%s\n", str.items);  // "Hello, world! Welcome."
- * char *result = ciao_st_detach(&str);
+ * char *result = st_detach(&str);
  * free(result);
  * @endcode
  */
