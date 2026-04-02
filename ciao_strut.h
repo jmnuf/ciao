@@ -235,7 +235,7 @@ char *ciao_st_detach(Ciao_Strut *st);
  * @param n Number of characters from the end.
  * @return String_View of the last N characters.
  */
-String_View ciao_st_peek_sv(Ciao_Strut *st, size_t n);
+Ciao_String_View ciao_st_peek_sv(Ciao_Strut *st, size_t n);
 
 /**
  * Returns a String_View of a range.
@@ -244,7 +244,7 @@ String_View ciao_st_peek_sv(Ciao_Strut *st, size_t n);
  * @param count Number of characters.
  * @return String_View of the range.
  */
-String_View ciao_st_view_range(Ciao_Strut *st, size_t start, size_t count);
+Ciao_String_View ciao_st_view_range(Ciao_Strut *st, size_t start, size_t count);
 #endif // __CIAO_VISTA_H
 
 #ifdef __CIAO_CA_H
@@ -446,7 +446,7 @@ bool ciao_st_push_fmt(Ciao_Strut *st, const char *fmt, ...) {
         } break;
         #ifdef __CIAO_VISTA_H
         case 'V': {
-          String_View sv = va_arg(ap, String_View);
+          Ciao_String_View sv = va_arg(ap, Ciao_String_View);
           if (!ciao_st_push_sv(st, sv)) { result = false; goto defer; }
         } break;
         #endif
@@ -551,15 +551,15 @@ char *ciao_st_detach(Ciao_Strut *st) {
 }
 
 #ifdef __CIAO_VISTA_H
-String_View ciao_st_peek_sv(Ciao_Strut *st, size_t n) {
+Ciao_String_View ciao_st_peek_sv(Ciao_Strut *st, size_t n) {
   if (n >= st->len) return ciao_st_to_sv(st);
-  return sv_from_parts(st->items[(st->len - n)], n);
+  return ciao_sv_from_parts(st->items[(st->len - n)], n);
 }
 
-String_View ciao_st_view_range(Ciao_Strut *st, size_t start, size_t count) {
+Ciao_String_View ciao_st_view_range(Ciao_Strut *st, size_t start, size_t count) {
   if (st->data == NULL || start >= st->len) return SV_NULL;
-  if (start + count > st->len) return sv_from_parts(st->items, st->len);
-  return sv_from_parts(sv->items + start, count);
+  if (start + count > st->len) return ciao_sv_from_parts(st->items, st->len);
+  return ciao_sv_from_parts(sv->items + start, count);
 }
 #endif // __CIAO_VISTA_H
 
