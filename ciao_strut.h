@@ -553,13 +553,13 @@ char *ciao_st_detach(Ciao_Strut *st) {
 #ifdef __CIAO_VISTA_H
 Ciao_String_View ciao_st_peek_sv(Ciao_Strut *st, size_t n) {
   if (n >= st->len) return ciao_st_to_sv(st);
-  return ciao_sv_from_parts(st->items[(st->len - n)], n);
+  return ciao_sv_from_parts(st->items + (st->len - n), n);
 }
 
 Ciao_String_View ciao_st_view_range(Ciao_Strut *st, size_t start, size_t count) {
-  if (st->data == NULL || start >= st->len) return SV_NULL;
+  if (st->items == NULL || start >= st->len) return CIAO_SV_NULL;
   if (start + count > st->len) return ciao_sv_from_parts(st->items, st->len);
-  return ciao_sv_from_parts(sv->items + start, count);
+  return ciao_sv_from_parts(st->items + start, count);
 }
 #endif // __CIAO_VISTA_H
 
