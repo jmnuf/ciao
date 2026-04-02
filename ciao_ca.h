@@ -544,7 +544,17 @@ bool ciao_da_void_find(const void *items, size_t len, size_t item_size, bool (*p
 
 #endif // CIAO_CAH_STRIP_PREFIX
 
+
+
 #ifdef CIAO_CAH_IMPLEMENTATION
+
+#ifdef CIAO_CAH_STDLIB_MEM
+#    include <stdlib.h>
+#    include <string.h>
+#    define CIAO_CAH_MEM_REALLOC realloc
+#    define CIAO_CAH_MEM_FREE    free
+#endif // CIAO_CAH_STDLIB_MEM
+
 
 #ifndef CIAO_CAH_MEM_REALLOC
 static_assert(false, "CIAO_CAH_MEM_REALLOC macro requires to be specified");
@@ -554,6 +564,7 @@ static_assert(false, "CIAO_CAH_MEM_REALLOC macro requires to be specified");
 static_assert(false, "CIAO_CAH_MEM_FREE macro requires to be specified");
 #endif //  CIAO_CAH_MEM_FREE
 
+#ifndef CIAO_CAH_STDLIB_MEM
 static inline void *ciao__cah_mem_copy(void *restrict dest, void *restrict src, size_t n) {
   char *dest_buf = (char*)dest;
   char *src_buf  = (char*)src;
@@ -574,6 +585,10 @@ static inline void *ciao__cah_mem_move(void *dest, const void *src, size_t n) {
     }
     return dest;
 }
+#else
+#    define ciao__cah_mem_copy memcpy
+#    define ciao__cah_mem_move memmove
+#endif // CIAO_CAH_STDLIB_MEM
 
 bool ciao_da_void_reserve(void **items_ref, size_t *cap, size_t item_size, size_t amount) {
   if (*cap >= amount) return true;

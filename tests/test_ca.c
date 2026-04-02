@@ -1,8 +1,7 @@
 #include "test.h"
 
 #define CIAO_CAH_INIT_CAP 16
-#define CIAO_CAH_MEM_REALLOC realloc
-#define CIAO_CAH_MEM_FREE    free
+#define CIAO_CAH_STDLIB_MEM
 #define CIAO_CAH_IMPLEMENTATION
 #define CIAO_STRIP_PREFIX
 #include "ciao_ca.h"
