@@ -6,8 +6,8 @@
 Cmd cmd = {0};
 
 void usage(const char *program_name) {
-  printf("Usage: %s [FLAGS] [run [-- [RUN_ARGS]]]\n", program_name);
-  printf("    run        ---        Run built executable\n");
+  printf("Usage: %s [FLAGS] [run [RUN_ARGS]]\n", program_name);
+  printf("    run        ---        Run built test runner\n");
   printf("Flags:\n");
   printf("    -B         ---        Force re-building\n");
   printf("    -g         ---        Include debug information\n");
@@ -24,6 +24,7 @@ void cc_debug_info(Cmd *cmd) {
 
 int main(int argc, char **argv) {
   NOB_GO_REBUILD_URSELF(argc, argv);
+  const char *program_name = shift(argv, argc);
 
   bool should_run = false;
   bool force_rebuild = false;
@@ -31,8 +32,9 @@ int main(int argc, char **argv) {
   while (argc > 0) {
     const char *arg = shift(argv, argc);
 
-    if (should_run && strcmp(arg, "--") == 0) {
-      break;
+    if (strcmp(arg, "-h") == 0) {
+      usage(program_name);
+      return 0;
     }
 
     if (strcmp(arg, "-B") == 0) {
@@ -47,19 +49,21 @@ int main(int argc, char **argv) {
 
     if (strcmp(arg, "run") == 0) {
       should_run = true;
-      continue;
+      break;
     }
+
+    nob_log(WARNING, "Unknown command/arg provided: %s", arg);
   }
 
   if (!mkdir_if_not_exists(BUILD_FOLDER)) return 1;
 
   const char *output_path = BUILD_FOLDER"ciao";
-  if (force_rebuild || needs_rebuild1(output_path, "main.c")) {
+  if (force_rebuild || needs_rebuild1(output_path, "test.c")) {
     nob_cc(&cmd);
     nob_cc_flags(&cmd);
     nob_cc_output(&cmd, BUILD_FOLDER"ciao");
 
-    nob_cc_inputs(&cmd, "main.c");
+    nob_cc_inputs(&cmd, "test.c");
 
     if (with_debug_info) cc_debug_info(&cmd);
 
