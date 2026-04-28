@@ -546,9 +546,9 @@ bool ciao_da_void_find(const void *items, size_t len, size_t item_size, bool (*p
 
 
 
-#ifdef CIAO_CAH_IMPLEMENTATION
+#if defined(CIAO_CAH_IMPLEMENTATION) || defined(CIAO_IMPLEMENTATION)
 
-#ifdef CIAO_CAH_STDLIB_MEM
+#if defined(CIAO_CAH_MEM_STDLIB) || defined(CIAO_MEM_STDLIB)
 #    include <stdlib.h>
 #    include <string.h>
 #    define CIAO_CAH_MEM_REALLOC realloc

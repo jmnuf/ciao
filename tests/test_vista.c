@@ -1,6 +1,6 @@
 #include "test.h"
 
-#define CIAO_VISTA_IMPLEMENTATION
+#define CIAO_IMPLEMENTATION
 #include "ciao_vista.h"
 
 #include <ctype.h>

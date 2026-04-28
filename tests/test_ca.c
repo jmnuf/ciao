@@ -1,8 +1,8 @@
 #include "test.h"
 
 #define CIAO_CAH_INIT_CAP 16
-#define CIAO_CAH_STDLIB_MEM
-#define CIAO_CAH_IMPLEMENTATION
+#define CIAO_MEM_STDLIB
+#define CIAO_IMPLEMENTATION
 #include "ciao_ca.h"
 
 struct Foo { int a, b; };

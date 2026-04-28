@@ -1,8 +1,7 @@
 #include "test.h"
 
-#define CIAO_ST_MEM_REALLOC realloc
-#define CIAO_ST_MEM_FREE free
-#define CIAO_STRUT_IMPLEMENTATION
+#define CIAO_MEM_STDLIB
+#define CIAO_IMPLEMENTATION
 #include "ciao_strut.h"
 
 TEST_FN(st_push) {

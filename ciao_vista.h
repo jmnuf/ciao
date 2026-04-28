@@ -60,6 +60,8 @@ typedef struct Ciao_String_View {
   size_t len;       ///< Length of the string in bytes.
 } Ciao_String_View;
 
+#define Ciao_Vista Ciao_String_View
+
 /**
  * Constructs a Ciao_String_View from a pointer and length.
  *
@@ -380,6 +382,7 @@ size_t ciao_zstr_len(const char *zstr);
 #define __CIAO_VISTA_STRIP_PREFIX
 
 #define String_View Ciao_String_View
+#define Vista Ciao_String_View
 #define sv_from_parts ciao_sv_from_parts
 #define SV_Fmt CIAO_SV_Fmt
 #define SV_Arg CIAO_SV_Arg
@@ -419,7 +422,7 @@ size_t ciao_zstr_len(const char *zstr);
 #endif // CIAO_VISTA_STRIP_PREFIX
 
 
-#ifdef CIAO_VISTA_IMPLEMENTATION
+#if defined(CIAO_VISTA_IMPLEMENTATION) || defined(CIAO_IMPLEMENTATION)
 
 #define STR_VISTA__ASCII_CASE_DIF ('a' - 'A')
 

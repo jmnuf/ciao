@@ -26,8 +26,7 @@
  *
  * @par Usage Example:
  * @code
- * #define CIAO_ST_MEM_REALLOC realloc
- * #define CIAO_ST_MEM_FREE free
+ * #define CIAO_MEM_STDLIB
  * #define CIAO_STRUT_IMPLEMENTATION
  * #define CIAO_STRIP_PREFIX
  * #include "ciao_strut.h"
@@ -296,7 +295,13 @@ Ciao_Strut ciao_st_from_da_void(void **items, size_t *len, size_t *cap, size_t i
 #endif // CIAO_STRUT_STRIP_PREFIX
 
 
-#ifdef CIAO_STRUT_IMPLEMENTATION
+#if defined(CIAO_STRUT_IMPLEMENTATION) || defined(CIAO_IMPLEMENTATION)
+
+#if defined(CIAO_ST_MEM_STDLIB) || defined(CIAO_MEM_STDLIB)
+#include <stdlib.h>
+#define CIAO_ST_MEM_REALLOC realloc
+#define CIAO_ST_MEM_FREE    free
+#endif // CIAO_ST_MEM_STDLIB
 
 #ifndef CIAO_ST_MEM_REALLOC
 static_assert(false, "CIAO_ST_MEM_REALLOC macro requires to be specified");
